@@ -1,5 +1,8 @@
 ---
 import "../styles/global.css";
+
+const githubUrl = "https://github.com/Hilo-Hilo/WorldFork";
+const docsUrl = "https://worldfork.readthedocs.io/en/latest/";
 ---
 
 <!doctype html>
@@ -9,75 +12,229 @@ import "../styles/global.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="WorldFork is backend-first infrastructure for branching social simulations, agent workflows, and auditable multiverse reports."
+      content="WorldFork is open-source backend infrastructure for branching social simulations — turn one scenario into many inspectable timelines."
     />
-    <title>WorldFork</title>
+    <meta property="og:title" content="WorldFork" />
+    <meta
+      property="og:description"
+      content="Open-source backend for branching social simulations. One scenario, many inspectable timelines."
+    />
+    <title>WorldFork — branching simulation infrastructure</title>
   </head>
   <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="WorldFork home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">WorldFork</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#how-it-works">How it works</a>
+        <a href="#setup">Setup</a>
+        <a href="#about">About</a>
+        <a href={docsUrl}>Docs</a>
+        <a class="topnav-cta" href={githubUrl}>GitHub →</a>
+      </nav>
+    </header>
+
     <main class="shell">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">CLI-first branching simulation infrastructure</p>
-          <h1 id="hero-title">WorldFork</h1>
+          <p class="eyebrow">Open source · CLI-first · Branching simulations</p>
+          <h1 id="hero-title">
+            One scenario.<br />
+            <span class="accent">Many timelines.</span>
+          </h1>
           <p class="lede">
-            Turn one scenario into inspectable timelines with durable state,
-            agent reviews, job logs, and structured reports.
+            WorldFork is backend infrastructure for branching social
+            simulations. Fork a Big Bang into a multiverse of inspectable
+            timelines — with checkpointed ticks, agent reviews, job logs,
+            lineage, and structured reports.
           </p>
           <div class="actions" aria-label="Primary links">
-            <a class="button primary" href="https://github.com/Hilo-Hilo/WorldFork">
-              GitHub
+            <a class="button primary" href={githubUrl}>
+              <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+              View on GitHub
             </a>
-            <a class="button" href="https://worldfork.readthedocs.io/en/latest/">
-              Docs
-            </a>
+            <a class="button" href={docsUrl}>Read the docs</a>
+            <a class="button ghost" href="#how-it-works">See how it works ↓</a>
           </div>
+          <dl class="stats" aria-label="Project facts">
+            <div><dt>License</dt><dd>Open source</dd></div>
+            <div><dt>Surface</dt><dd>Backend &amp; CLI</dd></div>
+            <div><dt>Status</dt><dd>Active development</dd></div>
+          </dl>
         </div>
-        <div class="diagram" aria-label="WorldFork flow diagram">
-          <div class="node root">Scenario</div>
-          <div class="branches">
-            <div class="lane">
-              <span>Big Bang</span>
-              <strong>M1</strong>
-              <em>Report</em>
+
+        <figure class="diagram" aria-label="WorldFork branching flow">
+          <figcaption class="diagram-caption">Scenario → Big Bang → Multiverse → Reports</figcaption>
+          <div class="diagram-grid">
+            <div class="node node-scenario">
+              <span class="node-label">Scenario</span>
+              <span class="node-sub">seed + agents + rules</span>
             </div>
-            <div class="lane">
-              <span>Branch</span>
-              <strong>M2</strong>
-              <em>Compare</em>
-            </div>
-            <div class="lane">
-              <span>Branch</span>
-              <strong>M3</strong>
-              <em>Audit</em>
-            </div>
+            <svg class="connector" viewBox="0 0 200 120" aria-hidden="true" preserveAspectRatio="none">
+              <path d="M 10 60 C 80 60, 80 20, 190 20" />
+              <path d="M 10 60 C 80 60, 80 60, 190 60" />
+              <path d="M 10 60 C 80 60, 80 100, 190 100" />
+            </svg>
+            <ul class="lanes" role="list">
+              <li class="lane">
+                <span class="lane-tag">Big Bang</span>
+                <strong class="lane-id">M1</strong>
+                <em class="lane-out">Report</em>
+              </li>
+              <li class="lane">
+                <span class="lane-tag">Branch</span>
+                <strong class="lane-id">M2</strong>
+                <em class="lane-out">Compare</em>
+              </li>
+              <li class="lane">
+                <span class="lane-tag">Branch</span>
+                <strong class="lane-id">M3</strong>
+                <em class="lane-out">Audit</em>
+              </li>
+            </ul>
+          </div>
+        </figure>
+      </section>
+
+      <section id="how-it-works" class="section" aria-labelledby="how-title">
+        <header class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-title">From a single seed to a forkable multiverse</h2>
+          <p class="section-lede">
+            Every run is durable, lineage-tracked, and replayable. Fork at any
+            tick to explore counterfactuals without losing the parent state.
+          </p>
+        </header>
+        <div class="grid grid-4">
+          <article class="card">
+            <span class="step">01</span>
+            <h3>Scenario</h3>
+            <p>Define the world: agents, rules, initial conditions, and the seed that bootstraps simulation.</p>
+          </article>
+          <article class="card">
+            <span class="step">02</span>
+            <h3>Big Bang</h3>
+            <p>Spawn the first multiverse from the scenario. Ticks run forward and checkpoint to durable state.</p>
+          </article>
+          <article class="card">
+            <span class="step">03</span>
+            <h3>Fork</h3>
+            <p>Branch any tick into a new multiverse. Lineage is preserved — every timeline traces back to its parent.</p>
+          </article>
+          <article class="card">
+            <span class="step">04</span>
+            <h3>Report</h3>
+            <p>Inspect agent reviews, job logs, and structured reports across timelines. Compare, audit, replay.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="features" class="section" aria-labelledby="features-title">
+        <header class="section-head">
+          <p class="eyebrow">What you get</p>
+          <h2 id="features-title">Built for inspection, not just execution</h2>
+        </header>
+        <div class="grid grid-3">
+          <article class="card">
+            <h3>Checkpointed ticks</h3>
+            <p>Every tick is durable. Pause, fork, or replay any moment in any timeline.</p>
+          </article>
+          <article class="card">
+            <h3>Agent reviews</h3>
+            <p>Structured reasoning from each agent at each step — not just outputs.</p>
+          </article>
+          <article class="card">
+            <h3>Job logs &amp; lineage</h3>
+            <p>Trace every branch back to its parent. Audit how a timeline came to be.</p>
+          </article>
+          <article class="card">
+            <h3>Structured reports</h3>
+            <p>Machine-readable summaries per multiverse. Compare across forks programmatically.</p>
+          </article>
+          <article class="card">
+            <h3>CLI-first</h3>
+            <p>Scripted workflows over click-throughs. Reproducible by design.</p>
+          </article>
+          <article class="card">
+            <h3>Backend-first</h3>
+            <p>No coupled UI. Bring your own frontend, notebook, or pipeline.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="setup" class="section" aria-labelledby="setup-title">
+        <header class="section-head">
+          <p class="eyebrow">Setup</p>
+          <h2 id="setup-title">Run it locally in under a minute</h2>
+          <p class="section-lede">
+            WorldFork is a Python CLI. Clone, install editable, and discover
+            agents to verify your environment.
+          </p>
+        </header>
+        <div class="setup-block">
+          <pre class="terminal" aria-label="Setup commands"><code><span class="prompt">$</span> git clone https://github.com/Hilo-Hilo/WorldFork.git
+<span class="prompt">$</span> cd WorldFork
+<span class="prompt">$</span> python3.11 -m pip install -e ./cli
+<span class="prompt">$</span> worldfork agent discover</code></pre>
+          <div class="setup-cta">
+            <a class="button primary" href={githubUrl}>Clone the repo</a>
+            <a class="button" href={docsUrl}>Full documentation →</a>
           </div>
         </div>
       </section>
 
-      <section class="grid" aria-label="WorldFork summary">
-        <article>
-          <h2>What It Is</h2>
+      <section id="about" class="section about" aria-labelledby="about-title">
+        <header class="section-head">
+          <p class="eyebrow">Why it exists</p>
+          <h2 id="about-title">Counterfactuals deserve infrastructure</h2>
+        </header>
+        <div class="about-body">
           <p>
-            WorldFork is a backend and CLI for running branching social
-            simulations. It is built around Big Bang scenarios, multiverse
-            timelines, checkpointed ticks, and reports.
+            Most simulation tools treat a run as a single artifact — start,
+            execute, dispose. But the interesting questions are
+            counterfactual: <em>what if</em> this agent had decided otherwise?
+            <em>What if</em> the rules shifted at tick 200?
           </p>
-        </article>
-        <article>
-          <h2>How To Try It</h2>
-          <pre><code>git clone https://github.com/Hilo-Hilo/WorldFork.git
-cd WorldFork
-python3.11 -m pip install -e ./cli
-worldfork agent discover</code></pre>
-        </article>
-        <article>
-          <h2>Public Site Only</h2>
           <p>
-            This landing page is static. It does not connect to a running
-            WorldFork backend or start simulations.
+            WorldFork makes branching a first-class operation. Forks are cheap.
+            State is durable. Lineage is tracked. Comparison is structured.
+            What you get is not one timeline, but a multiverse you can
+            inspect, audit, and reason about.
           </p>
-        </article>
+          <p class="about-cta">
+            <a href={githubUrl}>Star us on GitHub</a> ·
+            <a href={docsUrl}>Read the docs</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="cta" aria-labelledby="cta-title">
+        <h2 id="cta-title">Ready to fork a world?</h2>
+        <p>WorldFork is open source and free to run. Clone the repo, read the docs, file an issue.</p>
+        <div class="actions">
+          <a class="button primary large" href={githubUrl}>Get WorldFork on GitHub</a>
+          <a class="button large" href={docsUrl}>Documentation</a>
+        </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div>
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-name">WorldFork</span>
+        </div>
+        <nav aria-label="Footer">
+          <a href={githubUrl}>GitHub</a>
+          <a href={docsUrl}>Docs</a>
+          <a href={`${githubUrl}/issues`}>Issues</a>
+        </nav>
+        <p class="footer-meta">
+          Open source. Static landing page — no telemetry, no backend.
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
