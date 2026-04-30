@@ -16,14 +16,9 @@ const SETUP_DOCS_URL =
 const CLI_DOCS_URL = "https://worldfork.readthedocs.io/en/latest/cli.html";
 const ARCH_DOCS_URL =
   "https://worldfork.readthedocs.io/en/latest/architecture.html";
-const AGENT_INSTALL_PROMPT = `Run this command to install the WorldFork setup skill, then use it to set up
-WorldFork on this computer:
+const AGENT_INSTALL_PROMPT = `Run this command to install the WorldFork setup skill, then use it to set up WorldFork:
 
-npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all
-
-After installing it, use the setup skill to guide me through prerequisites,
-.env configuration with OPENROUTER_API_KEY, CLI installation, Docker Compose
-startup, migrations, seeding, readiness verification, and the onboarding demo.`;
+npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all`;
 
 type TreeNode = {
   id: string;
@@ -176,6 +171,97 @@ function Wordmark() {
         worldfork
       </span>
       <span className="font-mono text-[11px] text-bone-400">/v0.4</span>
+    </div>
+  );
+}
+
+/* ─────────── shared: agent-prompt copy card ─────────── */
+
+function SetupPromptCard({
+  prompt,
+  variant = "hero",
+}: {
+  prompt: string;
+  variant?: "hero" | "section";
+}) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  };
+  return (
+    <div
+      className={`relative border bg-ink-950 ${
+        variant === "hero"
+          ? "border-cool/60 shadow-[0_0_0_1px_rgba(74,158,255,0.15),0_18px_60px_-15px_rgba(74,158,255,0.35)]"
+          : "border-cool/40"
+      }`}
+    >
+      <div className="absolute -top-2 left-4 px-2 bg-ink-900">
+        <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-cool">
+          ▸ paste into your agent
+        </span>
+      </div>
+      <CornerMarks />
+      <div className="p-5 md:p-6">
+        <pre className="font-mono text-[12.5px] md:text-[13.5px] leading-[1.7] text-bone-100 whitespace-pre-wrap break-words">
+          <span className="text-bone-400">{`# `}</span>
+          <span>{prompt.split("\n\n")[0]}</span>
+          {"\n\n"}
+          <span className="text-cool">{prompt.split("\n\n")[1]}</span>
+        </pre>
+      </div>
+      <button
+        onClick={copy}
+        className={`w-full px-5 py-3.5 border-t border-cool/40 font-mono text-[12px] uppercase tracking-[0.16em] inline-flex items-center justify-center gap-2.5 transition-colors ${
+          copied
+            ? "bg-cool text-ink-950"
+            : "bg-cool/10 text-cool hover:bg-cool hover:text-ink-950"
+        }`}
+        aria-label="Copy setup prompt to clipboard"
+      >
+        {copied ? (
+          <>
+            <svg viewBox="0 0 12 12" className="w-3 h-3">
+              <path
+                d="M2 6l3 3 5-6"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>copied — paste into your agent</span>
+          </>
+        ) : (
+          <>
+            <svg viewBox="0 0 12 12" className="w-3 h-3">
+              <rect
+                x="2"
+                y="3"
+                width="6"
+                height="7"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+              />
+              <rect
+                x="4"
+                y="1.5"
+                width="6"
+                height="7"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+              />
+            </svg>
+            <span>copy setup prompt</span>
+            <span className="text-cool/60">↗</span>
+          </>
+        )}
+      </button>
     </div>
   );
 }
@@ -599,41 +685,55 @@ function Hero() {
                 <span className="absolute -right-3 top-1 w-2 h-[78%] bg-cool blink"></span>
               </span>
             </h1>
-            <p className="mt-7 text-[15px] md:text-base leading-relaxed text-bone-300 max-w-md">
-              Most simulations flatten history into one timeline. WorldFork
-              keeps the fork. Spin up a Big Bang, let agents tick it forward,
-              branch on consequential decisions, audit each timeline with a
-              god-agent, and read the structured report.
+            <p className="mt-6 text-[15px] md:text-[16px] leading-relaxed text-bone-300 max-w-md">
+              Spin up a Big Bang, let agents tick it forward, branch on
+              consequential decisions, audit each timeline, read the structured
+              report.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Btn primary href="#access">
-                Get early UI access
-                <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
-                  <path
-                    d="M0 5h9 M5 1l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    fill="none"
-                  />
-                </svg>
-              </Btn>
-              <Btn href={DOCS_URL} external>
-                Read the docs
-              </Btn>
-              <Btn href={DEEPWIKI_URL} external>
-                DeepWiki
-              </Btn>
+            {/* primary action — agent-paste setup prompt */}
+            <div className="mt-7 max-w-xl">
+              <SetupPromptCard prompt={AGENT_INSTALL_PROMPT} />
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11.5px] text-bone-400">
+                <a
+                  href={GITHUB_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="hover:text-bone-100 inline-flex items-center gap-1.5"
+                >
+                  <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                  GitHub
+                </a>
+                <a
+                  href={DOCS_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="hover:text-bone-100"
+                >
+                  Read the docs
+                </a>
+                <a
+                  href={DEEPWIKI_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="hover:text-bone-100"
+                >
+                  DeepWiki
+                </a>
+                <a href="#access" className="hover:text-bone-100">
+                  Get UI access →
+                </a>
+              </div>
             </div>
 
-            <div className="mt-12 grid grid-cols-3 gap-4 max-w-md">
+            <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
               {[
                 ["1st", "HackTech '26"],
                 ["128", "parallel timelines / run"],
                 ["v0.4", "CLI + HTTP API"],
               ].map(([n, l]) => (
                 <div key={l} className="border-l hairline-strong pl-3">
-                  <div className="num text-[26px] text-bone-100 leading-none">
+                  <div className="num text-[24px] text-bone-100 leading-none">
                     {n}
                   </div>
                   <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mt-2 leading-tight">
@@ -1596,30 +1696,34 @@ function Quickstart() {
       title="Paste one prompt into your agent. Done."
     >
       {/* AGENT PATH — recommended */}
-      <div className="border hairline bg-ink-950 relative">
-        <CornerMarks />
-        <div className="border-b hairline px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="w-1.5 h-1.5 bg-cool"></span>
-            <Mono className="!text-cool">recommended · agent-guided setup</Mono>
-          </div>
-          <span className="font-mono text-[10.5px] text-bone-400">
-            installs skill · guides setup · verifies stack
-          </span>
+      <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-start">
+        <div className="md:col-span-7">
+          <SetupPromptCard prompt={AGENT_INSTALL_PROMPT} variant="section" />
+          <p className="mt-4 font-mono text-[11.5px] text-bone-400 leading-relaxed">
+            the skill walks you through prerequisites, .env config, CLI install,
+            docker compose, migrations, seeding, readiness checks, and the
+            onboarding demo.
+          </p>
         </div>
-        <div className="p-5 md:p-6">
-          <pre className="font-mono text-[13px] leading-relaxed text-bone-100 whitespace-pre-wrap">{AGENT_INSTALL_PROMPT}</pre>
-        </div>
-        <div className="border-t hairline px-5 py-3 flex items-center justify-between gap-3">
-          <span className="font-mono text-[11px] text-bone-400">
-            the skill walks you through prerequisites, .env, CLI install, docker compose, migrations, seeding, and the onboarding demo.
-          </span>
-          <button
-            onClick={() => copy("agent", AGENT_INSTALL_PROMPT)}
-            className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
-          >
-            {copied === "agent" ? "copied" : "copy prompt"}
-          </button>
+        <div className="md:col-span-5">
+          <ol className="space-y-4 font-mono text-[12.5px] text-bone-200">
+            {[
+              ["paste", "drop the prompt above into your agent"],
+              ["install", "agent runs npx skills add ... --all"],
+              ["follow", "agent walks you through prerequisites + .env"],
+              ["verify", "agent confirms readiness and runs the demo"],
+            ].map(([k, v], i) => (
+              <li key={k} className="flex gap-4">
+                <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-cool w-6 shrink-0 mt-0.5">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>
+                  <span className="text-bone-100 font-medium">{k}</span>
+                  <span className="text-bone-400"> — {v}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
 
@@ -1686,7 +1790,6 @@ function Quickstart() {
 /* ─────────── 10. FOOTER ─────────── */
 
 function Footer() {
-  const buildDate = "2026-04-30";
   return (
     <footer className="border-t hairline mt-20">
       <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-12">
@@ -1762,13 +1865,22 @@ function Footer() {
             © 2026 WorldFork Labs · made for researchers, by researchers
           </div>
           <div className="flex items-center gap-5">
-            <a href="#" className="hover:text-bone-100 transition-colors">
-              privacy
+            <a
+              href={`${GITHUB_URL}/issues`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="hover:text-bone-100 transition-colors"
+            >
+              file an issue
             </a>
-            <a href="#" className="hover:text-bone-100 transition-colors">
-              terms
+            <a
+              href={DOCS_URL}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="hover:text-bone-100 transition-colors"
+            >
+              docs
             </a>
-            <span>build 9af31b2 · {buildDate}</span>
           </div>
         </div>
       </div>
