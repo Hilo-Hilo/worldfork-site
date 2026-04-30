@@ -4,7 +4,6 @@ import {
   useEffect,
   useMemo,
   useState,
-  type FormEvent,
   type ReactNode,
 } from "react";
 
@@ -332,8 +331,8 @@ function Nav() {
               HackTech &apos;26 · 1st
             </span>
           </div>
-          <Btn primary small href="#access">
-            Get early UI access →
+          <Btn primary small href={GITHUB_URL} external>
+            Open GitHub →
           </Btn>
         </div>
       </div>
@@ -702,7 +701,7 @@ function Hero() {
                   className="hover:text-bone-100 inline-flex items-center gap-1.5"
                 >
                   <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-                  GitHub
+                  Open GitHub
                 </a>
                 <a
                   href={DOCS_URL}
@@ -710,7 +709,7 @@ function Hero() {
                   rel="noreferrer noopener"
                   className="hover:text-bone-100"
                 >
-                  Read the docs
+                  Open docs
                 </a>
                 <a
                   href={DEEPWIKI_URL}
@@ -719,9 +718,6 @@ function Hero() {
                   className="hover:text-bone-100"
                 >
                   DeepWiki
-                </a>
-                <a href="#access" className="hover:text-bone-100">
-                  Get UI access →
                 </a>
               </div>
             </div>
@@ -1437,190 +1433,7 @@ function CLISection() {
           </div>
           <div className="mt-3 font-mono text-[11px] text-bone-400 flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-cool"></span>
-            CLI is the supported surface today. Web UI is in private alpha —
-            request access below.
-          </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-/* ─────────── 7. UI TEASER + EMAIL ─────────── */
-
-function UITeaser() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [err, setErr] = useState("");
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!/.+@.+\..+/.test(email)) {
-      setErr("expected: name@domain");
-      return;
-    }
-    setErr("");
-    setSubmitted(true);
-  };
-  const tree = useMemo(() => buildTree(19), []);
-
-  return (
-    <Section
-      id="access"
-      label="§06 — coming"
-      title="The multiverse explorer. Private alpha."
-    >
-      <div className="grid md:grid-cols-12 gap-8">
-        <div className="md:col-span-7">
-          <div className="border hairline bg-ink-950 relative">
-            <CornerMarks />
-            <div className="border-b hairline px-4 py-2 flex items-center gap-3 font-mono text-[10.5px] text-bone-400">
-              <div className="flex gap-1.5">
-                <span className="w-2 h-2 bg-bone-500"></span>
-                <span className="w-2 h-2 bg-bone-500"></span>
-                <span className="w-2 h-2 bg-cool"></span>
-              </div>
-              <span className="ml-3 px-2 py-0.5 border hairline text-bone-300">
-                app.worldfork.dev/runs/rn_7c9d04
-              </span>
-              <span className="ml-auto">wireframe / not shipped</span>
-            </div>
-            <div className="grid grid-cols-12 min-h-[420px]">
-              <div className="col-span-2 border-r hairline p-3 font-mono text-[10.5px] text-bone-400 space-y-3">
-                <div>RUNS</div>
-                <div className="space-y-1.5 text-bone-200">
-                  <div className="text-cool">› rn_7c9d04</div>
-                  <div>rn_5a2c11</div>
-                  <div>rn_44d908</div>
-                  <div>rn_1f0e67</div>
-                </div>
-                <div className="pt-3 border-t hairline">FILTERS</div>
-                <div className="space-y-1 text-bone-300">
-                  <div>☑ active</div>
-                  <div>☑ audited</div>
-                  <div>☐ pruned</div>
-                </div>
-              </div>
-              <div className="col-span-7 relative bp-grid-fine border-r hairline">
-                <div className="absolute top-2 left-3 font-mono text-[10.5px] text-bone-400">
-                  multiverse / 128 timelines
-                </div>
-                <div className="absolute inset-0 p-4 pt-7">
-                  <MiniTree tree={tree} t={0} />
-                </div>
-                <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-bone-500">
-                  <span>[ scroll · zoom · pin ]</span>
-                  <span>seed=19</span>
-                </div>
-              </div>
-              <div className="col-span-3 p-4 font-mono text-[11px] space-y-3">
-                <div className="text-bone-400">INSPECTOR</div>
-                <div>
-                  <div className="text-bone-400">branch_id</div>
-                  <div className="text-bone-100">0.1.2.0</div>
-                </div>
-                <div>
-                  <div className="text-bone-400">audit</div>
-                  <div className="text-cool">pass · 6/6</div>
-                </div>
-                <div>
-                  <div className="text-bone-400">divergence</div>
-                  <div className="text-bone-100">Δ = 0.41</div>
-                </div>
-                <div className="pt-3 border-t hairline">
-                  <div className="text-bone-400 mb-1.5">recent ticks</div>
-                  {[
-                    "t=04 actor.7 → defect",
-                    "t=05 audit ✓",
-                    "t=06 actor.3 → align",
-                    "t=07 fork(k=2)",
-                  ].map((l) => (
-                    <div
-                      key={l}
-                      className="text-bone-200 leading-relaxed"
-                    >
-                      › {l}
-                    </div>
-                  ))}
-                </div>
-                <button className="w-full mt-2 border border-cool text-cool px-2 py-1.5 hover:bg-cool/10 transition-colors uppercase tracking-[0.14em] text-[10px]">
-                  open transcript →
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="md:col-span-5">
-          <div className="border hairline bg-ink-850 p-6 md:p-8 relative">
-            <CornerMarks />
-            <Mono>access · cohort 02</Mono>
-            <h3 className="mt-3 text-2xl font-medium tracking-tight text-bone-100">
-              Request UI access
-            </h3>
-            <p className="mt-2 text-bone-300 text-[14px] leading-relaxed">
-              Cohort 02 opens in May. We&apos;re prioritising alignment
-              researchers, agent developers, and social-science labs running
-              scenario work.
-            </p>
-
-            {!submitted ? (
-              <form onSubmit={submit} className="mt-6">
-                <label className="block font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mb-2">
-                  work email
-                </label>
-                <div className="flex">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="researcher@lab.org"
-                    className="flex-1 bg-ink-900 border hairline-strong px-3 py-2.5 font-mono text-[13px] text-bone-100 placeholder:text-bone-500 focus:outline-none focus:border-cool"
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 bg-cool text-ink-950 font-mono text-[12px] uppercase tracking-[0.14em] hover:bg-cool-soft border border-cool border-l-0"
-                  >
-                    request →
-                  </button>
-                </div>
-                {err && (
-                  <div className="mt-2 font-mono text-[11px] text-cool-soft">
-                    err: {err}
-                  </div>
-                )}
-                <div className="mt-3 font-mono text-[10.5px] text-bone-500 leading-relaxed">
-                  no marketing. one email when your cohort opens. unsubscribe
-                  via headers.
-                </div>
-              </form>
-            ) : (
-              <div className="mt-6 border hairline-strong bg-ink-900 p-4 font-mono text-[12px]">
-                <div className="text-cool">ok · request received</div>
-                <div className="text-bone-300 mt-1">
-                  you&apos;ll hear from us when cohort 02 opens.
-                </div>
-                <div className="text-bone-500 mt-2 text-[10.5px]">
-                  200 OK · queued · {email}
-                </div>
-              </div>
-            )}
-
-            <div className="mt-8 grid grid-cols-3 gap-4">
-              {[
-                ["~3 wk", "cohort cadence"],
-                ["~40", "seats / cohort"],
-                ["NDA", "pre-release"],
-              ].map(([n, l]) => (
-                <div key={l} className="border-l hairline-strong pl-3">
-                  <div className="num text-[18px] text-bone-100 leading-none">
-                    {n}
-                  </div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-bone-400 mt-1.5 leading-tight">
-                    {l}
-                  </div>
-                </div>
-              ))}
-            </div>
+            CLI is the supported surface today. Web UI is in private alpha.
           </div>
         </div>
       </div>
@@ -1898,7 +1711,6 @@ export default function Landing() {
       <ConceptLineVsTree />
       <HowItWorks />
       <CLISection />
-      <UITeaser />
       <StackStrip />
       <Quickstart />
       <Footer />
