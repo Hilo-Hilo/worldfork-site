@@ -1,0 +1,1739 @@
+"use client";
+
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
+
+const GITHUB_URL = "https://github.com/Hilo-Hilo/WorldFork";
+const PRD_URL = "https://github.com/Hilo-Hilo/WorldFork/blob/main/prd.md";
+const DOCS_URL = "https://github.com/Hilo-Hilo/WorldFork/tree/main/docs";
+const CONTRIBUTING_URL =
+  "https://github.com/Hilo-Hilo/WorldFork/blob/main/CONTRIBUTING.md";
+const RELEASES_URL = "https://github.com/Hilo-Hilo/WorldFork/releases";
+const EXAMPLES_URL = "https://github.com/Hilo-Hilo/WorldFork/tree/main/examples";
+const SCENARIO_DOCS_URL =
+  "https://github.com/Hilo-Hilo/WorldFork/tree/main/source_of_truth";
+
+type TreeNode = {
+  id: string;
+  x: number;
+  y: number;
+  depth: number;
+  parent: TreeNode | null;
+  branchProb: number;
+};
+
+type TreeEdge = { from: TreeNode; to: TreeNode };
+
+type Tree = { nodes: TreeNode[]; edges: TreeEdge[] };
+
+/* ─────────── small atoms ─────────── */
+
+function Section({
+  id,
+  label,
+  title,
+  children,
+  className = "",
+}: {
+  id?: string;
+  label?: ReactNode;
+  title?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section id={id} className={`relative border-t hairline ${className}`}>
+      <div className="max-w-[1240px] mx-auto px-6 md:px-10">
+        {(label || title) && (
+          <div className="pt-10 md:pt-16 pb-6 md:pb-10 grid md:grid-cols-12 gap-6">
+            {label && (
+              <div className="md:col-span-3">
+                <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-bone-400">
+                  {label}
+                </div>
+              </div>
+            )}
+            {title && (
+              <h2 className="md:col-span-9 text-3xl md:text-[44px] leading-[1.05] font-medium tracking-tight text-bone-100 max-w-3xl">
+                {title}
+              </h2>
+            )}
+          </div>
+        )}
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function Mono({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`font-mono text-[11px] tracking-[0.14em] uppercase text-bone-400 ${className}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function Btn({
+  children,
+  primary,
+  href = "#",
+  onClick,
+  className = "",
+  small,
+  external,
+}: {
+  children: ReactNode;
+  primary?: boolean;
+  href?: string;
+  onClick?: () => void;
+  className?: string;
+  small?: boolean;
+  external?: boolean;
+}) {
+  const base = small ? "px-3 py-1.5 text-[12px]" : "px-4 py-2.5 text-[13px]";
+  const externalProps = external
+    ? { target: "_blank", rel: "noreferrer noopener" }
+    : {};
+  if (primary) {
+    return (
+      <a
+        href={href}
+        onClick={onClick}
+        {...externalProps}
+        className={`${base} ${className} inline-flex items-center gap-2 font-mono tracking-wide bg-cool text-ink-950 hover:bg-cool-soft transition-colors border border-cool`}
+      >
+        {children}
+      </a>
+    );
+  }
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      {...externalProps}
+      className={`${base} ${className} inline-flex items-center gap-2 font-mono tracking-wide text-bone-100 border border-bone-100/15 hover:border-bone-100/40 hover:bg-white/[0.03] transition-colors`}
+    >
+      {children}
+    </a>
+  );
+}
+
+function Cross({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 12 12" className={`w-3 h-3 ${className}`}>
+      <path d="M6 0v12 M0 6h12" stroke="currentColor" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+function CornerMarks() {
+  return (
+    <>
+      <Cross className="absolute -top-1.5 -left-1.5 text-bone-400/60" />
+      <Cross className="absolute -top-1.5 -right-1.5 text-bone-400/60" />
+      <Cross className="absolute -bottom-1.5 -left-1.5 text-bone-400/60" />
+      <Cross className="absolute -bottom-1.5 -right-1.5 text-bone-400/60" />
+    </>
+  );
+}
+
+function Wordmark() {
+  return (
+    <div className="flex items-baseline gap-1.5">
+      <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-bone-100">
+        <path
+          d="M12 22 V14 M12 14 L6 8 M12 14 L18 8 M6 8 V3 M18 8 V3 M12 14 H12"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          fill="none"
+          strokeLinecap="square"
+        />
+        <circle cx="6" cy="3" r="1.4" fill="#4A9EFF" />
+        <circle cx="18" cy="3" r="1.4" fill="currentColor" opacity="0.4" />
+      </svg>
+      <span className="font-mono text-[15px] font-medium tracking-tight text-bone-100">
+        worldfork
+      </span>
+      <span className="font-mono text-[11px] text-bone-400">/v0.4</span>
+    </div>
+  );
+}
+
+/* ─────────── 1. NAV ─────────── */
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <header
+      className={`sticky top-0 z-50 transition-colors ${
+        scrolled
+          ? "bg-ink-900/85 backdrop-blur border-b hairline"
+          : "border-b border-transparent"
+      }`}
+    >
+      <div className="max-w-[1240px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between gap-4">
+        <a href="#top" className="flex items-center gap-2.5 group">
+          <Wordmark />
+        </a>
+        <nav className="hidden md:flex items-center gap-7 font-mono text-[12px] text-bone-300">
+          <a href="#concept" className="hover:text-bone-100 transition-colors">
+            Fork
+          </a>
+          <a href="#runtime" className="hover:text-bone-100 transition-colors">
+            Runtime
+          </a>
+          <a href="#cli" className="hover:text-bone-100 transition-colors">
+            CLI
+          </a>
+          <a href="#stack" className="hover:text-bone-100 transition-colors">
+            Architecture
+          </a>
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hover:text-bone-100 transition-colors inline-flex items-center gap-1.5"
+          >
+            GitHub
+            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
+              <path
+                d="M2 8l6-6M3 2h5v5"
+                stroke="currentColor"
+                strokeWidth="1"
+                fill="none"
+              />
+            </svg>
+          </a>
+        </nav>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 border hairline-strong">
+            <span className="w-1.5 h-1.5 bg-cool"></span>
+            <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-bone-200">
+              HackTech &apos;26 · 1st
+            </span>
+          </div>
+          <Btn primary small href="#access">
+            Get early UI access →
+          </Btn>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ─────────── 2. HERO TREE ─────────── */
+
+function buildTree(seed = 7): Tree {
+  let s = seed;
+  const rnd = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return (s & 0xfffffff) / 0xfffffff;
+  };
+
+  const root: TreeNode = {
+    id: "r",
+    x: 60,
+    y: 260,
+    depth: 0,
+    parent: null,
+    branchProb: 0.85,
+  };
+  const nodes: TreeNode[] = [root];
+  const edges: TreeEdge[] = [];
+  const COLS = [60, 200, 360, 520, 660, 790];
+
+  const grow = (parent: TreeNode) => {
+    if (parent.depth >= 5) return;
+    const branches =
+      parent.depth === 0 ? 2 : rnd() < (parent.branchProb || 0.55) ? 2 : 1;
+    const baseY = parent.y;
+    const spread = [180, 110, 70, 44, 28][parent.depth] || 20;
+    for (let i = 0; i < branches; i++) {
+      const sign =
+        branches === 1 ? (rnd() < 0.5 ? -1 : 1) : i === 0 ? -1 : 1;
+      const wobble = (rnd() - 0.5) * 14;
+      const child: TreeNode = {
+        id: parent.id + "." + i,
+        x: COLS[parent.depth + 1] + (rnd() - 0.5) * 30,
+        y: Math.max(
+          30,
+          Math.min(
+            490,
+            baseY + sign * spread * (0.55 + rnd() * 0.5) + wobble
+          )
+        ),
+        depth: parent.depth + 1,
+        parent,
+        branchProb: (parent.branchProb || 0.55) * 0.78,
+      };
+      nodes.push(child);
+      edges.push({ from: parent, to: child });
+      grow(child);
+    }
+  };
+  grow(root);
+  return { nodes, edges };
+}
+
+function HeroTree() {
+  const { nodes, edges } = useMemo(() => buildTree(11), []);
+  const [t, setT] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setT((x) => x + 1), 1100);
+    return () => clearInterval(id);
+  }, []);
+
+  const auditedIds = useMemo(
+    () =>
+      new Set(
+        nodes
+          .filter((n) => n.depth === 4)
+          .slice(2, 5)
+          .map((n) => n.id)
+      ),
+    [nodes]
+  );
+  const prunedIds = useMemo(
+    () =>
+      new Set(
+        nodes
+          .filter((n) => n.depth >= 3 && Math.abs(n.y - 260) > 170)
+          .slice(0, 3)
+          .map((n) => n.id)
+      ),
+    [nodes]
+  );
+
+  const pathFor = (e: TreeEdge) => {
+    const dx = e.to.x - e.from.x;
+    const c1x = e.from.x + dx * 0.5;
+    const c2x = e.to.x - dx * 0.4;
+    return `M ${e.from.x} ${e.from.y} C ${c1x} ${e.from.y}, ${c2x} ${e.to.y}, ${e.to.x} ${e.to.y}`;
+  };
+
+  const tickColumns = [60, 200, 360, 520, 660, 790];
+  const tickLabels = ["t=0", "t=1", "t=2", "t=3", "t=4", "t=5"];
+
+  return (
+    <div className="relative w-full h-full">
+      <div className="absolute inset-0 pointer-events-none">
+        {tickColumns.map((cx, i) => (
+          <div
+            key={i}
+            className="absolute -top-1"
+            style={{ left: `${(cx / 880) * 100}%` }}
+          >
+            <div className="-translate-x-1/2 text-center">
+              <div className="font-mono text-[10px] text-bone-400 tracking-[0.14em]">
+                {tickLabels[i]}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <svg viewBox="0 0 880 520" className="w-full h-full overflow-visible">
+        <defs>
+          <pattern
+            id="bp"
+            width="32"
+            height="32"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M32 0H0V32"
+              fill="none"
+              stroke="rgba(255,255,255,0.025)"
+              strokeWidth="0.5"
+            />
+          </pattern>
+          <radialGradient id="rootGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#4A9EFF" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="#4A9EFF" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        <rect width="880" height="520" fill="url(#bp)" />
+
+        {tickColumns.map((cx, i) => (
+          <line
+            key={i}
+            x1={cx}
+            y1="20"
+            x2={cx}
+            y2="500"
+            stroke="rgba(255,255,255,0.06)"
+            strokeDasharray="2 4"
+          />
+        ))}
+
+        {edges.map((e, i) => {
+          const isPruned = prunedIds.has(e.to.id);
+          const len = 600;
+          const delay = e.from.depth * 0.18 + (i % 6) * 0.04;
+          return (
+            <path
+              key={i}
+              d={pathFor(e)}
+              fill="none"
+              stroke={
+                isPruned
+                  ? "rgba(232,233,236,0.18)"
+                  : e.to.depth <= 1
+                  ? "#4A9EFF"
+                  : "rgba(124,184,255,0.55)"
+              }
+              strokeWidth={Math.max(0.6, 2.2 - e.from.depth * 0.35)}
+              strokeLinecap="round"
+              strokeDasharray={isPruned ? "3 4" : undefined}
+              className="path-draw"
+              style={
+                {
+                  "--len": len,
+                  animationDelay: `${delay}s`,
+                } as React.CSSProperties
+              }
+            />
+          );
+        })}
+
+        <circle cx={nodes[0].x} cy={nodes[0].y} r="36" fill="url(#rootGlow)" />
+
+        {nodes.map((n) => {
+          const isRoot = n.depth === 0;
+          const isLeaf = !edges.some((e) => e.from === n);
+          const isAudited = auditedIds.has(n.id);
+          const isPruned = prunedIds.has(n.id);
+          const r = isRoot ? 6 : isLeaf ? 3 : 2.4;
+          const fill = isRoot
+            ? "#4A9EFF"
+            : isPruned
+            ? "#363C46"
+            : isAudited
+            ? "#E8E9EC"
+            : n.depth <= 1
+            ? "#4A9EFF"
+            : "#7CB8FF";
+          return (
+            <g
+              key={n.id}
+              className="node-pop"
+              style={{ animationDelay: `${0.2 + n.depth * 0.18}s` }}
+            >
+              {isRoot && (
+                <circle
+                  cx={n.x}
+                  cy={n.y}
+                  r="4"
+                  fill="none"
+                  stroke="#4A9EFF"
+                  strokeWidth="1.2"
+                  className="pulse-ring"
+                />
+              )}
+              {isAudited && (
+                <rect
+                  x={n.x - 6}
+                  y={n.y - 6}
+                  width="12"
+                  height="12"
+                  fill="none"
+                  stroke="#E8E9EC"
+                  strokeWidth="0.6"
+                />
+              )}
+              <circle
+                cx={n.x}
+                cy={n.y}
+                r={r}
+                fill={fill}
+                stroke={isRoot ? "#0A0B0D" : "none"}
+                strokeWidth="1"
+              />
+            </g>
+          );
+        })}
+
+        <g>
+          <line
+            x1="60"
+            y1="305"
+            x2="60"
+            y2="335"
+            stroke="#4A9EFF"
+            strokeWidth="0.8"
+          />
+          <text
+            x="60"
+            y="350"
+            fontSize="10"
+            fill="#4A9EFF"
+            fontFamily="JetBrains Mono, monospace"
+            textAnchor="middle"
+            letterSpacing="1.5"
+          >
+            BIG&nbsp;BANG
+          </text>
+        </g>
+
+        <g
+          fontFamily="JetBrains Mono, monospace"
+          fontSize="9.5"
+          fill="#9AA0AB"
+          letterSpacing="0.6"
+        >
+          <line
+            x1="540"
+            y1="100"
+            x2="588"
+            y2="138"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="0.5"
+          />
+          <text x="430" y="98">
+            ⌐ branch_event=ELECTION_OUTCOME
+          </text>
+          <line
+            x1="675"
+            y1="395"
+            x2="700"
+            y2="380"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="0.5"
+          />
+          <text x="555" y="408">
+            ⌐ pruned: violates audit constraints
+          </text>
+          <line
+            x1="685"
+            y1="220"
+            x2="715"
+            y2="232"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="0.5"
+          />
+          <text x="600" y="218">
+            ⌐ god-agent audit ✓
+          </text>
+        </g>
+
+        <g
+          fontFamily="JetBrains Mono, monospace"
+          fontSize="10"
+          fill="#6B7079"
+        >
+          <text x="14" y="510">
+            tick {String(t).padStart(4, "0")} · nodes {nodes.length} · branches{" "}
+            {edges.length} · audited {auditedIds.size} · pruned{" "}
+            {prunedIds.size}
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+/* ─────────── 3. HERO BLOCK ─────────── */
+
+function Hero() {
+  return (
+    <section id="top" className="relative">
+      <div className="absolute inset-0 bp-grid opacity-60 pointer-events-none" />
+      <div className="max-w-[1240px] mx-auto px-6 md:px-10 pt-12 md:pt-20 pb-16 md:pb-24 relative">
+        <div className="flex items-center justify-between border-b hairline pb-3 mb-10 md:mb-14 font-mono text-[11px] text-bone-400">
+          <div className="flex items-center gap-4">
+            <span>§01 / hero</span>
+            <span className="hidden sm:inline">scenario.yaml</span>
+            <span className="hidden md:inline">commit 9af31b2</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="hidden md:inline">runtime: ready</span>
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-cool"></span>online
+            </span>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-12 gap-10 md:gap-8">
+          <div className="md:col-span-5 lg:col-span-5">
+            <Mono>§01 — agent-operated branching social simulation</Mono>
+            <h1 className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.03em] text-bone-100">
+              Fork the
+              <br />
+              <span className="relative inline-block">
+                world.
+                <span className="absolute -right-3 top-1 w-2 h-[78%] bg-cool blink"></span>
+              </span>
+            </h1>
+            <p className="mt-7 text-[15px] md:text-base leading-relaxed text-bone-300 max-w-md">
+              Most simulations flatten history into one timeline. WorldFork
+              keeps the fork. Spin up a Big Bang, let agents tick it forward,
+              branch on consequential decisions, audit each timeline with a
+              god-agent, and read the structured report.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Btn primary href="#access">
+                Get early UI access
+                <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
+                  <path
+                    d="M0 5h9 M5 1l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    fill="none"
+                  />
+                </svg>
+              </Btn>
+              <Btn href={PRD_URL} external>
+                Read the PRD
+              </Btn>
+            </div>
+
+            <div className="mt-12 grid grid-cols-3 gap-4 max-w-md">
+              {[
+                ["1st", "HackTech '26"],
+                ["128", "parallel timelines / run"],
+                ["v0.4", "CLI + HTTP API"],
+              ].map(([n, l]) => (
+                <div key={l} className="border-l hairline-strong pl-3">
+                  <div className="num text-[26px] text-bone-100 leading-none">
+                    {n}
+                  </div>
+                  <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mt-2 leading-tight">
+                    {l}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="md:col-span-7 lg:col-span-7">
+            <div className="relative border hairline bg-ink-950">
+              <CornerMarks />
+              <div className="flex items-center justify-between px-4 py-2.5 border-b hairline font-mono text-[10.5px] text-bone-400">
+                <div className="flex items-center gap-4">
+                  <span>fig.01</span>
+                  <span>multiverse / scenario:berlin-1989</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="hidden sm:inline">drawing 23,041 edges</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-cool"></span>live
+                  </span>
+                </div>
+              </div>
+              <div className="aspect-[880/520] p-4 md:p-6 relative bp-grid-fine">
+                <HeroTree />
+              </div>
+              <div className="border-t hairline px-4 py-2.5 flex items-center justify-between font-mono text-[10.5px] text-bone-400">
+                <div className="flex items-center gap-5">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-cool"></span>active
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 border border-bone-100"></span>
+                    audited
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-bone-500"></span>pruned
+                  </span>
+                </div>
+                <span>seed=11 / depth=5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────── 4. CONCEPT ─────────── */
+
+function MiniTree({ tree, t }: { tree: Tree; t: number }) {
+  const path = (e: { from: { x: number; y: number }; to: { x: number; y: number } }) => {
+    const dx = e.to.x - e.from.x;
+    return `M ${e.from.x} ${e.from.y} C ${e.from.x + dx * 0.5} ${e.from.y}, ${
+      e.to.x - dx * 0.4
+    } ${e.to.y}, ${e.to.x} ${e.to.y}`;
+  };
+  return (
+    <svg viewBox="0 0 500 300" className="w-full h-full">
+      {Array.from({ length: 9 }).map((_, i) => (
+        <line
+          key={i}
+          x1={20 + i * 55}
+          y1="20"
+          x2={20 + i * 55}
+          y2="280"
+          stroke="rgba(255,255,255,0.04)"
+          strokeDasharray="2 4"
+        />
+      ))}
+      {tree.edges.map((e, i) => {
+        const scaled = (n: { x: number; y: number }) => ({
+          x: 20 + (n.x / 880) * 460,
+          y: 20 + (n.y / 520) * 260,
+        });
+        const from = scaled(e.from);
+        const to = scaled(e.to);
+        return (
+          <path
+            key={i}
+            d={path({ from, to })}
+            fill="none"
+            stroke={
+              e.to.depth <= 1 ? "#4A9EFF" : "rgba(124,184,255,0.6)"
+            }
+            strokeWidth={Math.max(0.5, 1.6 - e.from.depth * 0.25)}
+          />
+        );
+      })}
+      {tree.nodes.map((n) => {
+        const sx = 20 + (n.x / 880) * 460;
+        const sy = 20 + (n.y / 520) * 260;
+        const isRoot = n.depth === 0;
+        return (
+          <circle
+            key={n.id}
+            cx={sx}
+            cy={sy}
+            r={isRoot ? 4 : 1.8}
+            fill={isRoot ? "#4A9EFF" : "#7CB8FF"}
+          />
+        );
+      })}
+      <text
+        x="20"
+        y="296"
+        fontSize="9"
+        fontFamily="JetBrains Mono, monospace"
+        fill="#6B7079"
+      >
+        t=0
+      </text>
+      <text
+        x="478"
+        y="296"
+        fontSize="9"
+        fontFamily="JetBrains Mono, monospace"
+        fill="#6B7079"
+        textAnchor="end"
+      >
+        t=8
+      </text>
+      {/* prevent unused t warning by minor decorative behaviour */}
+      <g style={{ opacity: 0.0001 }}>
+        <text x="0" y="0">
+          {t}
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+function ConceptLineVsTree() {
+  const [t, setT] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setT((x) => x + 1), 90);
+    return () => clearInterval(id);
+  }, []);
+
+  const tree = useMemo(() => buildTree(3), []);
+
+  return (
+    <Section
+      id="concept"
+      label="§02 — concept"
+      title="One timeline tells you what happened. A tree tells you what could have."
+    >
+      <div className="grid md:grid-cols-2 gap-px bg-bone-100/10 mt-4">
+        <div className="bg-ink-900 p-6 md:p-10">
+          <div className="flex items-center justify-between mb-4">
+            <Mono>conventional / monoverse</Mono>
+            <span className="font-mono text-[10.5px] text-bone-400">
+              n_timelines = 1
+            </span>
+          </div>
+          <div className="aspect-[5/3] relative border hairline bp-grid-fine">
+            <svg
+              viewBox="0 0 500 300"
+              className="absolute inset-0 w-full h-full"
+            >
+              <line
+                x1="40"
+                y1="150"
+                x2="460"
+                y2="150"
+                stroke="#363C46"
+                strokeWidth="1.5"
+              />
+              {Array.from({ length: 9 }).map((_, i) => (
+                <g key={i}>
+                  <line
+                    x1={40 + i * 52.5}
+                    y1="146"
+                    x2={40 + i * 52.5}
+                    y2="154"
+                    stroke="#363C46"
+                  />
+                  <text
+                    x={40 + i * 52.5}
+                    y="174"
+                    fontSize="9"
+                    fontFamily="JetBrains Mono, monospace"
+                    fill="#6B7079"
+                    textAnchor="middle"
+                  >
+                    t={i}
+                  </text>
+                </g>
+              ))}
+              <circle
+                cx={40 + ((t / 2) % 9) * 52.5}
+                cy="150"
+                r="3"
+                fill="#E8E9EC"
+              />
+              <text
+                x="40"
+                y="60"
+                fontSize="11"
+                fontFamily="JetBrains Mono, monospace"
+                fill="#9AA0AB"
+              >
+                → one trajectory
+              </text>
+              <text
+                x="40"
+                y="78"
+                fontSize="11"
+                fontFamily="JetBrains Mono, monospace"
+                fill="#9AA0AB"
+              >
+                → no counterfactuals
+              </text>
+              <text
+                x="40"
+                y="96"
+                fontSize="11"
+                fontFamily="JetBrains Mono, monospace"
+                fill="#9AA0AB"
+              >
+                → collapse on every decision
+              </text>
+            </svg>
+          </div>
+          <div className="mt-5 font-mono text-[12px] text-bone-300 leading-relaxed">
+            <span className="text-bone-400">// </span>
+            you sample a path. you don&apos;t see the distribution. the
+            <br />
+            <span className="text-bone-400">// </span>
+            interesting question —{" "}
+            <span className="text-bone-100">
+              &quot;what would have happened if&quot;
+            </span>{" "}
+            — is unanswerable.
+          </div>
+        </div>
+
+        <div className="bg-ink-900 p-6 md:p-10 relative">
+          <div className="flex items-center justify-between mb-4">
+            <Mono className="!text-cool">worldfork / multiverse</Mono>
+            <span className="font-mono text-[10.5px] text-cool-soft">
+              n_timelines = 128
+            </span>
+          </div>
+          <div className="aspect-[5/3] relative border border-cool/30 bp-grid-fine">
+            <div className="absolute inset-0">
+              <MiniTree tree={tree} t={t} />
+            </div>
+          </div>
+          <div className="mt-5 font-mono text-[12px] text-bone-200 leading-relaxed">
+            <span className="text-cool">// </span>
+            keep every fork. tick all branches in parallel.
+            <br />
+            <span className="text-cool">// </span>
+            the tree <span className="text-bone-100">is</span> the answer —
+            distributions, counterfactuals, audited paths.
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 5. HOW IT WORKS ─────────── */
+
+const STAGES = [
+  {
+    key: "bigbang",
+    label: "Big Bang",
+    sub: "§04.a · scenario",
+    body: "Define initial conditions in YAML or via the API. Actors, world rules, decision schemas, branching constraints. WorldFork compiles this into a LangGraph.",
+    detail: [
+      "actors[]",
+      "world.rules",
+      "decision_points[]",
+      "audit.constraints[]",
+    ],
+  },
+  {
+    key: "multiverse",
+    label: "Multiverse",
+    sub: "§04.b · branching",
+    body: "At every decision point, the runtime forks. New timelines inherit state, then diverge. Branching is bounded by the configured policy (top-k, sampled, exhaustive).",
+    detail: ["policy = top_k", "k = 3", "depth_limit = 12", "parallelism = 64"],
+  },
+  {
+    key: "tick",
+    label: "Tick runtime",
+    sub: "§04.c · execution",
+    body: "Celery workers tick all live timelines in parallel against OpenRouter-backed agents. State checkpoints land in Postgres; ephemeral coordination through Redis.",
+    detail: [
+      "celery.workers = 32",
+      "state → postgres",
+      "queues → redis",
+      "llm → openrouter",
+    ],
+  },
+  {
+    key: "audit",
+    label: "God-agent audit",
+    sub: "§04.d · oversight",
+    body: "A privileged auditor agent reviews each branch against the constraint set. Violators are pruned and logged. Survivors continue ticking.",
+    detail: [
+      "constraint.satisfy",
+      "prune.if(violation)",
+      "append → audit.log",
+      "verdict ∈ {pass, prune, flag}",
+    ],
+  },
+  {
+    key: "report",
+    label: "Reports",
+    sub: "§04.e · output",
+    body: "Each run emits a structured report — branch tree, per-timeline transcripts, audit log, statistical rollups. Exportable as JSON, Parquet, or rendered HTML.",
+    detail: [
+      "tree.json",
+      "transcripts.parquet",
+      "audit.log",
+      "summary.html",
+    ],
+  },
+];
+
+function HowItWorks() {
+  const [active, setActive] = useState(0);
+  return (
+    <Section
+      id="runtime"
+      label="§04 — runtime"
+      title="Big Bang → Multiverse → Tick → Audit → Report."
+    >
+      <div className="grid md:grid-cols-12 gap-6 md:gap-10">
+        <div className="md:col-span-7">
+          <div className="relative border hairline bg-ink-950 p-6 md:p-8">
+            <CornerMarks />
+            <Mono>fig.04 / pipeline</Mono>
+
+            <div className="mt-6 grid grid-cols-5 gap-0">
+              {STAGES.map((s, i) => {
+                const isActive = i === active;
+                return (
+                  <button
+                    key={s.key}
+                    onClick={() => setActive(i)}
+                    onMouseEnter={() => setActive(i)}
+                    className={`group relative text-left px-2 py-3 border-r last:border-r-0 hairline ${
+                      isActive
+                        ? "bg-cool/[0.06]"
+                        : "hover:bg-white/[0.02]"
+                    }`}
+                  >
+                    <div
+                      className={`font-mono text-[10px] tracking-[0.16em] uppercase ${
+                        isActive ? "text-cool" : "text-bone-400"
+                      }`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <div
+                      className={`mt-2 text-[14px] md:text-[15px] font-medium leading-tight ${
+                        isActive
+                          ? "text-bone-100"
+                          : "text-bone-200 group-hover:text-bone-100"
+                      }`}
+                    >
+                      {s.label}
+                    </div>
+                    <div
+                      className={`absolute top-0 left-0 right-0 h-[2px] ${
+                        isActive ? "bg-cool" : "bg-transparent"
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 overflow-hidden">
+              <svg viewBox="0 0 700 200" className="w-full h-auto">
+                <line
+                  x1="40"
+                  y1="100"
+                  x2="660"
+                  y2="100"
+                  stroke="rgba(255,255,255,0.08)"
+                  strokeDasharray="2 4"
+                />
+                {STAGES.map((s, i) => {
+                  const cx = 70 + i * 140;
+                  const isActive = i === active;
+                  return (
+                    <g key={s.key}>
+                      {i > 0 && (
+                        <path
+                          d={`M ${cx - 140 + 18} 100 L ${cx - 18} 100`}
+                          stroke={
+                            i <= active ? "#4A9EFF" : "rgba(255,255,255,0.18)"
+                          }
+                          strokeWidth="1.2"
+                        />
+                      )}
+                      <g
+                        onMouseEnter={() => setActive(i)}
+                        onClick={() => setActive(i)}
+                        className="cursor-pointer"
+                      >
+                        <rect
+                          x={cx - 22}
+                          y={78}
+                          width="44"
+                          height="44"
+                          fill="#0A0B0D"
+                          stroke={
+                            isActive ? "#4A9EFF" : "rgba(232,233,236,0.35)"
+                          }
+                          strokeWidth={isActive ? 1.5 : 1}
+                        />
+                        <text
+                          x={cx}
+                          y="103"
+                          textAnchor="middle"
+                          fontSize="13"
+                          fontFamily="JetBrains Mono, monospace"
+                          fill={isActive ? "#4A9EFF" : "#9AA0AB"}
+                        >
+                          {["Σ", "⌥", "▶", "✓", "≡"][i]}
+                        </text>
+                        <text
+                          x={cx}
+                          y="143"
+                          textAnchor="middle"
+                          fontSize="9.5"
+                          fontFamily="JetBrains Mono, monospace"
+                          fill={isActive ? "#E8E9EC" : "#6B7079"}
+                          letterSpacing="0.5"
+                        >
+                          {s.label.toUpperCase()}
+                        </text>
+                      </g>
+                    </g>
+                  );
+                })}
+                <path
+                  d="M 490 78 C 490 50, 350 50, 350 78"
+                  fill="none"
+                  stroke="rgba(74,158,255,0.4)"
+                  strokeWidth="1"
+                  strokeDasharray="3 3"
+                />
+                <text
+                  x="420"
+                  y="46"
+                  fontSize="9"
+                  fontFamily="JetBrains Mono, monospace"
+                  fill="#7CB8FF"
+                  textAnchor="middle"
+                >
+                  prune → resume
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-5">
+          <div className="border hairline bg-ink-850 p-6 md:p-8 h-full relative">
+            <CornerMarks />
+            <div className="flex items-center justify-between">
+              <Mono>{STAGES[active].sub}</Mono>
+              <span className="font-mono text-[10.5px] text-bone-400">
+                {String(active + 1).padStart(2, "0")} / 05
+              </span>
+            </div>
+            <h3 className="mt-3 text-2xl md:text-3xl font-medium tracking-tight text-bone-100">
+              {STAGES[active].label}
+            </h3>
+            <p className="mt-3 text-[14px] leading-relaxed text-bone-300 max-w-md">
+              {STAGES[active].body}
+            </p>
+            <div className="mt-6 border-t hairline pt-4">
+              <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mb-3">
+                surface
+              </div>
+              <ul className="space-y-1.5 font-mono text-[12.5px] text-bone-200">
+                {STAGES[active].detail.map((d) => (
+                  <li key={d} className="flex items-center gap-2">
+                    <span className="text-cool">›</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 6. CLI ─────────── */
+
+const CLI_TABS = [
+  {
+    key: "init",
+    label: "init",
+    cmd: "$ worldfork init scenario.yaml --actors 12 --depth 8",
+    out: [
+      ["ok", "parsed scenario.yaml (12 actors, 4 decision points)"],
+      ["ok", "compiled langgraph: 31 nodes / 47 edges"],
+      ["ok", "auditor → god-agent v0.4 (constraints: 6)"],
+      ["→", "scenario id = sc_b3f1a2"],
+    ],
+  },
+  {
+    key: "run",
+    label: "run",
+    cmd: "$ worldfork run sc_b3f1a2 --branch top_k=3 --parallel 64",
+    out: [
+      ["ok", "spawned 64 celery workers @ openrouter/anthropic-haiku"],
+      ["t=01", "3 timelines · 0 pruned"],
+      ["t=02", "9 timelines · 0 pruned"],
+      ["t=03", "27 timelines · 1 pruned (audit:violence_threshold)"],
+      ["t=04", "73 timelines · 6 pruned"],
+      ["t=05", "128 timelines · 14 pruned · 4 flagged"],
+      ["→", "run id = rn_7c9d04"],
+    ],
+  },
+  {
+    key: "inspect",
+    label: "inspect",
+    cmd: "$ worldfork inspect rn_7c9d04 --branch 0.1.2.0",
+    out: [
+      ["", "branch_id     0.1.2.0"],
+      ["", "depth         5"],
+      ["", "audit         pass"],
+      ["", "divergence    Δ=0.41 from parent"],
+      ["", "transcript    342 turns / 12 actors"],
+      ["→", "open report → ./out/rn_7c9d04/0.1.2.0/"],
+    ],
+  },
+  {
+    key: "export",
+    label: "export",
+    cmd: "$ worldfork export rn_7c9d04 --format parquet --include audit",
+    out: [
+      ["ok", "tree.json          (1.2 MB)"],
+      ["ok", "transcripts.parquet (84.7 MB)"],
+      ["ok", "audit.log          (312 KB)"],
+      ["ok", "summary.html       (74 KB)"],
+      ["→", "wrote ./out/rn_7c9d04/"],
+    ],
+  },
+] as const;
+
+function CLISection() {
+  const [tab, setTab] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const [revealed, setRevealed] = useState(0);
+  const t = CLI_TABS[tab];
+
+  useEffect(() => {
+    setRevealed(0);
+    const id = setInterval(() => {
+      setRevealed((r) => {
+        if (r >= t.out.length) {
+          clearInterval(id);
+          return r;
+        }
+        return r + 1;
+      });
+    }, 230);
+    return () => clearInterval(id);
+  }, [tab, t.out.length]);
+
+  const copy = () => {
+    navigator.clipboard?.writeText(t.cmd.replace(/^\$ /, ""));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  };
+
+  return (
+    <Section
+      id="cli"
+      label="§05 — interface"
+      title={<>Designed for agents. The CLI ships today; the web UI is next.</>}
+    >
+      <div className="grid md:grid-cols-12 gap-8 md:gap-10">
+        <div className="md:col-span-4">
+          <p className="text-bone-300 leading-relaxed text-[14.5px] max-w-sm">
+            WorldFork is operated by other agents and by humans who think like
+            them. Stable Python CLI, stable HTTP API. Everything is reproducible
+            with a scenario id and a seed.
+          </p>
+          <div className="mt-6 space-y-2.5 font-mono text-[12.5px] text-bone-300">
+            <div className="flex items-center gap-2">
+              <span className="text-cool">▸</span>POSIX-friendly stdout
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-cool">▸</span>Idempotent run ids
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-cool">▸</span>Deterministic with seed
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-cool">▸</span>Streamed JSONL events
+            </div>
+          </div>
+          <div className="mt-8 border-l-2 border-cool pl-4">
+            <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-cool">
+              today
+            </div>
+            <div className="mt-1 text-bone-100 font-medium">
+              CLI · HTTP API · Python SDK
+            </div>
+            <div className="mt-3 font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400">
+              soon
+            </div>
+            <div className="mt-1 text-bone-300">
+              Multiverse explorer (web UI)
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-8">
+          <div className="border hairline bg-ink-950 relative">
+            <div className="flex items-center justify-between border-b hairline px-4 py-2.5">
+              <div className="flex items-center gap-3">
+                <div className="flex gap-1.5">
+                  <span className="w-2 h-2 bg-bone-500"></span>
+                  <span className="w-2 h-2 bg-bone-500"></span>
+                  <span className="w-2 h-2 bg-cool"></span>
+                </div>
+                <span className="font-mono text-[11px] text-bone-400 ml-2">
+                  ~/wf · zsh
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                {CLI_TABS.map((c, i) => (
+                  <button
+                    key={c.key}
+                    onClick={() => setTab(i)}
+                    className={`px-3 py-1 font-mono text-[11px] tracking-wide border-l hairline ${
+                      i === tab
+                        ? "text-bone-100 bg-white/[0.04]"
+                        : "text-bone-400 hover:text-bone-100"
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="px-5 pt-5 flex items-start justify-between gap-4">
+              <div className="font-mono text-[13px] text-bone-100 leading-snug">
+                <span className="text-bone-400">
+                  {t.cmd.startsWith("$") ? "$ " : ""}
+                </span>
+                <span>{t.cmd.replace(/^\$ /, "")}</span>
+              </div>
+              <button
+                onClick={copy}
+                className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
+              >
+                {copied ? "copied" : "copy"}
+              </button>
+            </div>
+
+            <div className="px-5 pt-3 pb-6 font-mono text-[12.5px] leading-[1.7] scan min-h-[230px]">
+              {t.out.slice(0, revealed).map(([tag, line], i) => (
+                <div key={i} className="flex gap-3">
+                  <span
+                    className={`w-6 shrink-0 ${
+                      tag === "ok"
+                        ? "text-cool"
+                        : tag === "→"
+                        ? "text-bone-100"
+                        : tag.startsWith("t=")
+                        ? "text-bone-400"
+                        : "text-bone-500"
+                    }`}
+                  >
+                    {tag}
+                  </span>
+                  <span className="text-bone-200">{line}</span>
+                </div>
+              ))}
+              {revealed < t.out.length && (
+                <div className="flex gap-3">
+                  <span className="w-6"></span>
+                  <span className="blink text-cool">_</span>
+                </div>
+              )}
+              {revealed >= t.out.length && (
+                <div className="mt-2 text-bone-400">
+                  $ <span className="blink">_</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="mt-3 font-mono text-[11px] text-bone-400 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-cool"></span>
+            CLI is the supported surface today. Web UI is in private alpha —
+            request access below.
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 7. UI TEASER + EMAIL ─────────── */
+
+function UITeaser() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [err, setErr] = useState("");
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!/.+@.+\..+/.test(email)) {
+      setErr("expected: name@domain");
+      return;
+    }
+    setErr("");
+    setSubmitted(true);
+  };
+  const tree = useMemo(() => buildTree(19), []);
+
+  return (
+    <Section
+      id="access"
+      label="§06 — coming"
+      title="The multiverse explorer. Private alpha."
+    >
+      <div className="grid md:grid-cols-12 gap-8">
+        <div className="md:col-span-7">
+          <div className="border hairline bg-ink-950 relative">
+            <CornerMarks />
+            <div className="border-b hairline px-4 py-2 flex items-center gap-3 font-mono text-[10.5px] text-bone-400">
+              <div className="flex gap-1.5">
+                <span className="w-2 h-2 bg-bone-500"></span>
+                <span className="w-2 h-2 bg-bone-500"></span>
+                <span className="w-2 h-2 bg-cool"></span>
+              </div>
+              <span className="ml-3 px-2 py-0.5 border hairline text-bone-300">
+                app.worldfork.dev/runs/rn_7c9d04
+              </span>
+              <span className="ml-auto">wireframe / not shipped</span>
+            </div>
+            <div className="grid grid-cols-12 min-h-[420px]">
+              <div className="col-span-2 border-r hairline p-3 font-mono text-[10.5px] text-bone-400 space-y-3">
+                <div>RUNS</div>
+                <div className="space-y-1.5 text-bone-200">
+                  <div className="text-cool">› rn_7c9d04</div>
+                  <div>rn_5a2c11</div>
+                  <div>rn_44d908</div>
+                  <div>rn_1f0e67</div>
+                </div>
+                <div className="pt-3 border-t hairline">FILTERS</div>
+                <div className="space-y-1 text-bone-300">
+                  <div>☑ active</div>
+                  <div>☑ audited</div>
+                  <div>☐ pruned</div>
+                </div>
+              </div>
+              <div className="col-span-7 relative bp-grid-fine border-r hairline">
+                <div className="absolute top-2 left-3 font-mono text-[10.5px] text-bone-400">
+                  multiverse / 128 timelines
+                </div>
+                <div className="absolute inset-0 p-4 pt-7">
+                  <MiniTree tree={tree} t={0} />
+                </div>
+                <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-bone-500">
+                  <span>[ scroll · zoom · pin ]</span>
+                  <span>seed=19</span>
+                </div>
+              </div>
+              <div className="col-span-3 p-4 font-mono text-[11px] space-y-3">
+                <div className="text-bone-400">INSPECTOR</div>
+                <div>
+                  <div className="text-bone-400">branch_id</div>
+                  <div className="text-bone-100">0.1.2.0</div>
+                </div>
+                <div>
+                  <div className="text-bone-400">audit</div>
+                  <div className="text-cool">pass · 6/6</div>
+                </div>
+                <div>
+                  <div className="text-bone-400">divergence</div>
+                  <div className="text-bone-100">Δ = 0.41</div>
+                </div>
+                <div className="pt-3 border-t hairline">
+                  <div className="text-bone-400 mb-1.5">recent ticks</div>
+                  {[
+                    "t=04 actor.7 → defect",
+                    "t=05 audit ✓",
+                    "t=06 actor.3 → align",
+                    "t=07 fork(k=2)",
+                  ].map((l) => (
+                    <div
+                      key={l}
+                      className="text-bone-200 leading-relaxed"
+                    >
+                      › {l}
+                    </div>
+                  ))}
+                </div>
+                <button className="w-full mt-2 border border-cool text-cool px-2 py-1.5 hover:bg-cool/10 transition-colors uppercase tracking-[0.14em] text-[10px]">
+                  open transcript →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-5">
+          <div className="border hairline bg-ink-850 p-6 md:p-8 relative">
+            <CornerMarks />
+            <Mono>access · cohort 02</Mono>
+            <h3 className="mt-3 text-2xl font-medium tracking-tight text-bone-100">
+              Request UI access
+            </h3>
+            <p className="mt-2 text-bone-300 text-[14px] leading-relaxed">
+              Cohort 02 opens in May. We&apos;re prioritising alignment
+              researchers, agent developers, and social-science labs running
+              scenario work.
+            </p>
+
+            {!submitted ? (
+              <form onSubmit={submit} className="mt-6">
+                <label className="block font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mb-2">
+                  work email
+                </label>
+                <div className="flex">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="researcher@lab.org"
+                    className="flex-1 bg-ink-900 border hairline-strong px-3 py-2.5 font-mono text-[13px] text-bone-100 placeholder:text-bone-500 focus:outline-none focus:border-cool"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 bg-cool text-ink-950 font-mono text-[12px] uppercase tracking-[0.14em] hover:bg-cool-soft border border-cool border-l-0"
+                  >
+                    request →
+                  </button>
+                </div>
+                {err && (
+                  <div className="mt-2 font-mono text-[11px] text-cool-soft">
+                    err: {err}
+                  </div>
+                )}
+                <div className="mt-3 font-mono text-[10.5px] text-bone-500 leading-relaxed">
+                  no marketing. one email when your cohort opens. unsubscribe
+                  via headers.
+                </div>
+              </form>
+            ) : (
+              <div className="mt-6 border hairline-strong bg-ink-900 p-4 font-mono text-[12px]">
+                <div className="text-cool">ok · request received</div>
+                <div className="text-bone-300 mt-1">
+                  you&apos;ll hear from us when cohort 02 opens.
+                </div>
+                <div className="text-bone-500 mt-2 text-[10.5px]">
+                  200 OK · queued · {email}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-8 grid grid-cols-3 gap-4">
+              {[
+                ["~3 wk", "cohort cadence"],
+                ["~40", "seats / cohort"],
+                ["NDA", "pre-release"],
+              ].map(([n, l]) => (
+                <div key={l} className="border-l hairline-strong pl-3">
+                  <div className="num text-[18px] text-bone-100 leading-none">
+                    {n}
+                  </div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-bone-400 mt-1.5 leading-tight">
+                    {l}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 8. STACK ─────────── */
+
+function StackStrip() {
+  const items = [
+    { name: "FastAPI", role: "http surface" },
+    { name: "LangGraph", role: "graph runtime" },
+    { name: "Celery", role: "tick workers" },
+    { name: "Postgres", role: "state · checkpoints" },
+    { name: "Redis", role: "queues · coord" },
+    { name: "OpenRouter", role: "agent llms" },
+  ];
+  return (
+    <Section
+      id="stack"
+      label="§07 — architecture"
+      title="Built on tools that have already proved themselves at scale."
+    >
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border hairline">
+        {items.map((it, i) => (
+          <div
+            key={it.name}
+            className={`p-5 md:p-6 border-r border-b hairline last:border-r-0 ${
+              i % 3 === 2 ? "lg:border-r-0" : ""
+            } ${i >= 3 ? "md:border-b-0" : ""}`}
+          >
+            <Mono>0{i + 1}</Mono>
+            <div className="mt-3 text-[18px] md:text-[20px] font-medium text-bone-100 tracking-tight">
+              {it.name}
+            </div>
+            <div className="mt-1 font-mono text-[11px] text-bone-400">
+              {it.role}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 font-mono text-[11px] text-bone-400 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 bg-cool"></span>
+        Self-hostable. Run against your own LLM endpoints. No managed service
+        required.
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 9. QUICKSTART ─────────── */
+
+const QUICK_STEPS = [
+  { n: "01", t: "install", cmd: "pip install worldfork" },
+  { n: "02", t: "init", cmd: "worldfork init scenarios/berlin-1989.yaml" },
+  {
+    n: "03",
+    t: "run",
+    cmd: "worldfork run sc_b3f1a2 --branch top_k=3 --parallel 64",
+  },
+  {
+    n: "04",
+    t: "inspect",
+    cmd: "worldfork inspect rn_7c9d04 --branch 0.1.2.0",
+  },
+];
+
+function Quickstart() {
+  const [copied, setCopied] = useState<number | null>(null);
+  const copy = (i: number, cmd: string) => {
+    navigator.clipboard?.writeText(cmd);
+    setCopied(i);
+    setTimeout(() => setCopied(null), 1200);
+  };
+  return (
+    <Section
+      id="quickstart"
+      label="§08 — quickstart"
+      title="Four commands. Local in under a minute."
+    >
+      <div className="border hairline">
+        {QUICK_STEPS.map((s, i) => (
+          <div
+            key={s.n}
+            className="grid grid-cols-12 border-b last:border-b-0 hairline"
+          >
+            <div className="col-span-2 md:col-span-1 p-4 md:p-5 border-r hairline">
+              <span className="font-mono text-[12px] text-bone-400">
+                {s.n}
+              </span>
+            </div>
+            <div className="col-span-10 md:col-span-3 p-4 md:p-5 border-r hairline">
+              <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400">
+                step
+              </div>
+              <div className="text-bone-100 mt-1">{s.t}</div>
+            </div>
+            <div className="col-span-12 md:col-span-8 p-4 md:p-5 flex items-center justify-between gap-3 bg-ink-950">
+              <code className="font-mono text-[13px] text-bone-100 truncate">
+                {s.cmd}
+              </code>
+              <button
+                onClick={() => copy(i, s.cmd)}
+                className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
+              >
+                {copied === i ? "copied" : "copy"}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 font-mono text-[11px] text-bone-400">
+        Requires Python 3.11+. Postgres and Redis via docker-compose; an
+        OpenRouter key in <span className="text-bone-200">.env</span>.
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 10. FOOTER ─────────── */
+
+function Footer() {
+  const buildDate = "2026-04-30";
+  return (
+    <footer className="border-t hairline mt-20">
+      <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-12">
+        <div className="grid md:grid-cols-12 gap-10">
+          <div className="md:col-span-5">
+            <Wordmark />
+            <p className="mt-4 text-bone-400 text-[13.5px] leading-relaxed max-w-sm">
+              Agent-operated branching social simulation. Built by a small team
+              of researchers and infrastructure engineers.
+            </p>
+            <div className="mt-5 flex items-center gap-2 px-2.5 py-1 border hairline-strong w-max">
+              <span className="w-1.5 h-1.5 bg-cool"></span>
+              <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-bone-200">
+                HackTech &apos;26 · 1st place
+              </span>
+            </div>
+          </div>
+          {(
+            [
+              [
+                "product",
+                [
+                  ["Concept", "#concept"],
+                  ["Runtime", "#runtime"],
+                  ["CLI", "#cli"],
+                  ["Architecture", "#stack"],
+                ],
+              ],
+              [
+                "docs",
+                [
+                  ["PRD", PRD_URL],
+                  ["Quickstart", "#quickstart"],
+                  ["API reference", DOCS_URL],
+                  ["Scenario format", SCENARIO_DOCS_URL],
+                ],
+              ],
+              [
+                "etc",
+                [
+                  ["GitHub", GITHUB_URL],
+                  ["Changelog", RELEASES_URL],
+                  ["Examples", EXAMPLES_URL],
+                  ["Contributing", CONTRIBUTING_URL],
+                ],
+              ],
+            ] as const
+          ).map(([h, items]) => (
+            <div key={h} className="md:col-span-2">
+              <Mono>{h}</Mono>
+              <ul className="mt-3 space-y-1.5 font-mono text-[12.5px] text-bone-300">
+                {items.map(([label, href]) => {
+                  const isExternal = href.startsWith("http");
+                  return (
+                    <li key={label}>
+                      <a
+                        href={href}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={
+                          isExternal ? "noreferrer noopener" : undefined
+                        }
+                        className="hover:text-bone-100 transition-colors"
+                      >
+                        {label}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="mt-12 pt-6 border-t hairline flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-mono text-[11px] text-bone-500">
+          <div>
+            © 2026 WorldFork Labs · made for researchers, by researchers
+          </div>
+          <div className="flex items-center gap-5">
+            <a href="#" className="hover:text-bone-100 transition-colors">
+              privacy
+            </a>
+            <a href="#" className="hover:text-bone-100 transition-colors">
+              terms
+            </a>
+            <span>build 9af31b2 · {buildDate}</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─────────── ROOT ─────────── */
+
+export default function Landing() {
+  return (
+    <div className="min-h-screen bg-ink-900 text-bone-100">
+      <Nav />
+      <Hero />
+      <ConceptLineVsTree />
+      <HowItWorks />
+      <CLISection />
+      <UITeaser />
+      <StackStrip />
+      <Quickstart />
+      <Footer />
+    </div>
+  );
+}

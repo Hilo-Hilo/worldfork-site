@@ -1,30 +1,33 @@
-# WorldFork Site
+# worldfork-site
 
-Public landing page for [WorldFork](https://github.com/Hilo-Hilo/WorldFork).
+Public landing page for [WorldFork](https://github.com/Hilo-Hilo/WorldFork) — agent-operated branching social simulation. HackTech '26 1st place.
 
-This repo is intentionally separate from the backend/CLI product repo. It should stay static and public-facing: no backend connection, no simulation execution, no API keys.
+Live: [worldfork.tech](https://worldfork.tech)
 
-## Local Development
+## Stack
+
+- Next.js 16 (App Router, Turbopack)
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Inter + JetBrains Mono via `next/font`
+
+## Develop
 
 ```bash
 npm install
 npm run dev
 ```
 
+Then open [http://localhost:3000](http://localhost:3000).
+
 ## Build
 
 ```bash
 npm run build
-npm run preview
+npm run start
 ```
 
-## Deployment
+## Deploy
 
-Recommended host: Vercel.
-
-- Framework preset: Astro
-- Build command: `npm run build`
-- Output directory: `dist`
-- Production branch: `main`
-
-After the domain is connected in Vercel, add the domain to this README and link it from the main WorldFork repo.
+Auto-deployed by Vercel on push to `main`. No configuration required — Vercel detects Next.js.
