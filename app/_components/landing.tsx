@@ -9,14 +9,21 @@ import {
 } from "react";
 
 const GITHUB_URL = "https://github.com/Hilo-Hilo/WorldFork";
-const PRD_URL = "https://github.com/Hilo-Hilo/WorldFork/blob/main/prd.md";
-const DOCS_URL = "https://github.com/Hilo-Hilo/WorldFork/tree/main/docs";
-const CONTRIBUTING_URL =
-  "https://github.com/Hilo-Hilo/WorldFork/blob/main/CONTRIBUTING.md";
-const RELEASES_URL = "https://github.com/Hilo-Hilo/WorldFork/releases";
-const EXAMPLES_URL = "https://github.com/Hilo-Hilo/WorldFork/tree/main/examples";
-const SCENARIO_DOCS_URL =
-  "https://github.com/Hilo-Hilo/WorldFork/tree/main/source_of_truth";
+const DOCS_URL = "https://worldfork.readthedocs.io/en/latest/";
+const DEEPWIKI_URL = "https://deepwiki.com/Hilo-Hilo/WorldFork";
+const SETUP_DOCS_URL =
+  "https://worldfork.readthedocs.io/en/latest/setup.html";
+const CLI_DOCS_URL = "https://worldfork.readthedocs.io/en/latest/cli.html";
+const ARCH_DOCS_URL =
+  "https://worldfork.readthedocs.io/en/latest/architecture.html";
+const AGENT_INSTALL_PROMPT = `Run this command to install the WorldFork setup skill, then use it to set up
+WorldFork on this computer:
+
+npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all
+
+After installing it, use the setup skill to guide me through prerequisites,
+.env configuration with OPENROUTER_API_KEY, CLI installation, Docker Compose
+startup, migrations, seeding, readiness verification, and the onboarding demo.`;
 
 type TreeNode = {
   id: string;
@@ -206,6 +213,14 @@ function Nav() {
           </a>
           <a href="#stack" className="hover:text-bone-100 transition-colors">
             Architecture
+          </a>
+          <a
+            href={DOCS_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hover:text-bone-100 transition-colors"
+          >
+            Docs
           </a>
           <a
             href={GITHUB_URL}
@@ -603,8 +618,11 @@ function Hero() {
                   />
                 </svg>
               </Btn>
-              <Btn href={PRD_URL} external>
-                Read the PRD
+              <Btn href={DOCS_URL} external>
+                Read the docs
+              </Btn>
+              <Btn href={DEEPWIKI_URL} external>
+                DeepWiki
               </Btn>
             </div>
 
@@ -1124,51 +1142,49 @@ const CLI_TABS = [
   {
     key: "init",
     label: "init",
-    cmd: "$ worldfork init scenario.yaml --actors 12 --depth 8",
+    cmd: "$ worldfork init --name \"Atlas onboarding\" --scenario-file examples/test-big-bang.md --max-ticks 4",
     out: [
-      ["ok", "parsed scenario.yaml (12 actors, 4 decision points)"],
-      ["ok", "compiled langgraph: 31 nodes / 47 edges"],
-      ["ok", "auditor → god-agent v0.4 (constraints: 6)"],
-      ["→", "scenario id = sc_b3f1a2"],
+      ["ok", "loaded scenario examples/test-big-bang.md"],
+      ["ok", "queued big bang · waiting for initialized state"],
+      ["ok", "model: google/gemini-3.1-flash-lite-preview"],
+      ["→", "big_bang_id = bb_a4f12c"],
     ],
   },
   {
-    key: "run",
-    label: "run",
-    cmd: "$ worldfork run sc_b3f1a2 --branch top_k=3 --parallel 64",
+    key: "watch",
+    label: "watch",
+    cmd: "$ worldfork watch big-bang bb_a4f12c",
     out: [
-      ["ok", "spawned 64 celery workers @ openrouter/anthropic-haiku"],
-      ["t=01", "3 timelines · 0 pruned"],
-      ["t=02", "9 timelines · 0 pruned"],
-      ["t=03", "27 timelines · 1 pruned (audit:violence_threshold)"],
-      ["t=04", "73 timelines · 6 pruned"],
-      ["t=05", "128 timelines · 14 pruned · 4 flagged"],
-      ["→", "run id = rn_7c9d04"],
+      ["ok", "streaming runtime activity"],
+      ["t=01", "multiverse mv_01 · tick 1/4"],
+      ["t=02", "multiverse mv_01 · tick 2/4 · god-agent review ✓"],
+      ["t=03", "multiverse mv_01 · branched → mv_02, mv_03"],
+      ["t=04", "3 multiverses · all reached terminal state"],
+      ["→", "report version = rv_7c9d04"],
     ],
   },
   {
-    key: "inspect",
-    label: "inspect",
-    cmd: "$ worldfork inspect rn_7c9d04 --branch 0.1.2.0",
+    key: "reports",
+    label: "reports",
+    cmd: "$ worldfork reports view rv_7c9d04",
     out: [
-      ["", "branch_id     0.1.2.0"],
-      ["", "depth         5"],
-      ["", "audit         pass"],
-      ["", "divergence    Δ=0.41 from parent"],
-      ["", "transcript    342 turns / 12 actors"],
-      ["→", "open report → ./out/rn_7c9d04/0.1.2.0/"],
+      ["", "report_version_id  rv_7c9d04"],
+      ["", "big_bang           bb_a4f12c"],
+      ["", "multiverses        3"],
+      ["", "ticks completed    12"],
+      ["", "format             markdown"],
+      ["→", "open structured report (database-backed)"],
     ],
   },
   {
-    key: "export",
-    label: "export",
-    cmd: "$ worldfork export rn_7c9d04 --format parquet --include audit",
+    key: "agent",
+    label: "agent",
+    cmd: "$ worldfork agent discover",
     out: [
-      ["ok", "tree.json          (1.2 MB)"],
-      ["ok", "transcripts.parquet (84.7 MB)"],
-      ["ok", "audit.log          (312 KB)"],
-      ["ok", "summary.html       (74 KB)"],
-      ["→", "wrote ./out/rn_7c9d04/"],
+      ["ok", "agent-facing api contract loaded"],
+      ["ok", "recommended flow: init → watch → reports view"],
+      ["ok", "endpoints: /api/agent/* (discovery, runs, jobs, reports)"],
+      ["→", "ready for agent operation"],
     ],
   },
 ] as const;
@@ -1558,68 +1574,110 @@ function StackStrip() {
 
 /* ─────────── 9. QUICKSTART ─────────── */
 
-const QUICK_STEPS = [
-  { n: "01", t: "install", cmd: "pip install worldfork" },
-  { n: "02", t: "init", cmd: "worldfork init scenarios/berlin-1989.yaml" },
-  {
-    n: "03",
-    t: "run",
-    cmd: "worldfork run sc_b3f1a2 --branch top_k=3 --parallel 64",
-  },
-  {
-    n: "04",
-    t: "inspect",
-    cmd: "worldfork inspect rn_7c9d04 --branch 0.1.2.0",
-  },
+const MANUAL_STEPS = [
+  { n: "01", t: "configure env", cmd: "cp .env.example .env  # set OPENROUTER_API_KEY" },
+  { n: "02", t: "install cli", cmd: "python3.11 -m pip install -e ./cli" },
+  { n: "03", t: "start stack", cmd: "make build && make up && make migrate && make seed" },
+  { n: "04", t: "first run", cmd: "worldfork init --name \"Atlas onboarding\" --scenario-file examples/test-big-bang.md --max-ticks 4" },
 ];
 
 function Quickstart() {
-  const [copied, setCopied] = useState<number | null>(null);
-  const copy = (i: number, cmd: string) => {
+  const [copied, setCopied] = useState<string | null>(null);
+  const [showManual, setShowManual] = useState(false);
+  const copy = (key: string, cmd: string) => {
     navigator.clipboard?.writeText(cmd);
-    setCopied(i);
+    setCopied(key);
     setTimeout(() => setCopied(null), 1200);
   };
   return (
     <Section
       id="quickstart"
       label="§08 — quickstart"
-      title="Four commands. Local in under a minute."
+      title="Paste one prompt into your agent. Done."
     >
-      <div className="border hairline">
-        {QUICK_STEPS.map((s, i) => (
-          <div
-            key={s.n}
-            className="grid grid-cols-12 border-b last:border-b-0 hairline"
-          >
-            <div className="col-span-2 md:col-span-1 p-4 md:p-5 border-r hairline">
-              <span className="font-mono text-[12px] text-bone-400">
-                {s.n}
-              </span>
-            </div>
-            <div className="col-span-10 md:col-span-3 p-4 md:p-5 border-r hairline">
-              <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400">
-                step
-              </div>
-              <div className="text-bone-100 mt-1">{s.t}</div>
-            </div>
-            <div className="col-span-12 md:col-span-8 p-4 md:p-5 flex items-center justify-between gap-3 bg-ink-950">
-              <code className="font-mono text-[13px] text-bone-100 truncate">
-                {s.cmd}
-              </code>
-              <button
-                onClick={() => copy(i, s.cmd)}
-                className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
-              >
-                {copied === i ? "copied" : "copy"}
-              </button>
-            </div>
+      {/* AGENT PATH — recommended */}
+      <div className="border hairline bg-ink-950 relative">
+        <CornerMarks />
+        <div className="border-b hairline px-5 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="w-1.5 h-1.5 bg-cool"></span>
+            <Mono className="!text-cool">recommended · agent-guided setup</Mono>
           </div>
-        ))}
+          <span className="font-mono text-[10.5px] text-bone-400">
+            installs skill · guides setup · verifies stack
+          </span>
+        </div>
+        <div className="p-5 md:p-6">
+          <pre className="font-mono text-[13px] leading-relaxed text-bone-100 whitespace-pre-wrap">{AGENT_INSTALL_PROMPT}</pre>
+        </div>
+        <div className="border-t hairline px-5 py-3 flex items-center justify-between gap-3">
+          <span className="font-mono text-[11px] text-bone-400">
+            the skill walks you through prerequisites, .env, CLI install, docker compose, migrations, seeding, and the onboarding demo.
+          </span>
+          <button
+            onClick={() => copy("agent", AGENT_INSTALL_PROMPT)}
+            className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
+          >
+            {copied === "agent" ? "copied" : "copy prompt"}
+          </button>
+        </div>
       </div>
+
+      {/* MANUAL PATH — backup */}
+      <div className="mt-6">
+        <button
+          onClick={() => setShowManual((v) => !v)}
+          className="font-mono text-[11px] uppercase tracking-[0.14em] text-bone-400 hover:text-bone-100 inline-flex items-center gap-2"
+        >
+          <span>{showManual ? "−" : "+"}</span>
+          <span>manual setup (backup)</span>
+        </button>
+        {showManual && (
+          <div className="mt-4 border hairline">
+            {MANUAL_STEPS.map((s, i) => (
+              <div
+                key={s.n}
+                className="grid grid-cols-12 border-b last:border-b-0 hairline"
+              >
+                <div className="col-span-2 md:col-span-1 p-4 md:p-5 border-r hairline">
+                  <span className="font-mono text-[12px] text-bone-400">{s.n}</span>
+                </div>
+                <div className="col-span-10 md:col-span-3 p-4 md:p-5 border-r hairline">
+                  <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400">
+                    step
+                  </div>
+                  <div className="text-bone-100 mt-1">{s.t}</div>
+                </div>
+                <div className="col-span-12 md:col-span-8 p-4 md:p-5 flex items-center justify-between gap-3 bg-ink-950">
+                  <code className="font-mono text-[13px] text-bone-100 truncate">
+                    {s.cmd}
+                  </code>
+                  <button
+                    onClick={() => copy(`m${i}`, s.cmd)}
+                    className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
+                  >
+                    {copied === `m${i}` ? "copied" : "copy"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="mt-4 font-mono text-[11px] text-bone-400">
-        Requires Python 3.11+. Postgres and Redis via docker-compose; an
-        OpenRouter key in <span className="text-bone-200">.env</span>.
+        Requires Python 3.11+, Docker Compose, Node 20+ for{" "}
+        <span className="text-bone-200">npx skills</span>, and an OpenRouter API
+        key. Full guide:{" "}
+        <a
+          href={SETUP_DOCS_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="text-cool hover:text-bone-100 underline-offset-4 hover:underline"
+        >
+          docs/setup
+        </a>
+        .
       </div>
     </Section>
   );
@@ -1649,30 +1707,28 @@ function Footer() {
           {(
             [
               [
-                "product",
+                "explore",
                 [
                   ["Concept", "#concept"],
                   ["Runtime", "#runtime"],
                   ["CLI", "#cli"],
-                  ["Architecture", "#stack"],
+                  ["Quickstart", "#quickstart"],
                 ],
               ],
               [
                 "docs",
                 [
-                  ["PRD", PRD_URL],
-                  ["Quickstart", "#quickstart"],
-                  ["API reference", DOCS_URL],
-                  ["Scenario format", SCENARIO_DOCS_URL],
+                  ["Read the Docs", DOCS_URL],
+                  ["DeepWiki", DEEPWIKI_URL],
+                  ["Setup guide", SETUP_DOCS_URL],
+                  ["CLI reference", CLI_DOCS_URL],
                 ],
               ],
               [
-                "etc",
+                "project",
                 [
                   ["GitHub", GITHUB_URL],
-                  ["Changelog", RELEASES_URL],
-                  ["Examples", EXAMPLES_URL],
-                  ["Contributing", CONTRIBUTING_URL],
+                  ["Architecture", ARCH_DOCS_URL],
                 ],
               ],
             ] as const
