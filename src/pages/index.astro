@@ -1,0 +1,83 @@
+---
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="WorldFork is backend-first infrastructure for branching social simulations, agent workflows, and auditable multiverse reports."
+    />
+    <title>WorldFork</title>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">CLI-first branching simulation infrastructure</p>
+          <h1 id="hero-title">WorldFork</h1>
+          <p class="lede">
+            Turn one scenario into inspectable timelines with durable state,
+            agent reviews, job logs, and structured reports.
+          </p>
+          <div class="actions" aria-label="Primary links">
+            <a class="button primary" href="https://github.com/Hilo-Hilo/WorldFork">
+              GitHub
+            </a>
+            <a class="button" href="https://worldfork.readthedocs.io/en/latest/">
+              Docs
+            </a>
+          </div>
+        </div>
+        <div class="diagram" aria-label="WorldFork flow diagram">
+          <div class="node root">Scenario</div>
+          <div class="branches">
+            <div class="lane">
+              <span>Big Bang</span>
+              <strong>M1</strong>
+              <em>Report</em>
+            </div>
+            <div class="lane">
+              <span>Branch</span>
+              <strong>M2</strong>
+              <em>Compare</em>
+            </div>
+            <div class="lane">
+              <span>Branch</span>
+              <strong>M3</strong>
+              <em>Audit</em>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="WorldFork summary">
+        <article>
+          <h2>What It Is</h2>
+          <p>
+            WorldFork is a backend and CLI for running branching social
+            simulations. It is built around Big Bang scenarios, multiverse
+            timelines, checkpointed ticks, and reports.
+          </p>
+        </article>
+        <article>
+          <h2>How To Try It</h2>
+          <pre><code>git clone https://github.com/Hilo-Hilo/WorldFork.git
+cd WorldFork
+python3.11 -m pip install -e ./cli
+worldfork agent discover</code></pre>
+        </article>
+        <article>
+          <h2>Public Site Only</h2>
+          <p>
+            This landing page is static. It does not connect to a running
+            WorldFork backend or start simulations.
+          </p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
