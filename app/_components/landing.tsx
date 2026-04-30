@@ -325,12 +325,25 @@ function Nav() {
           </a>
         </nav>
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 border hairline-strong">
+          <a
+            href="https://devpost.com/software/worldfork-tech"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hidden sm:flex items-center gap-2 px-2.5 py-1 border hairline-strong hover:border-cool/60 hover:bg-cool/[0.06] transition-colors"
+          >
             <span className="w-1.5 h-1.5 bg-cool"></span>
             <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-bone-200">
               HackTech &apos;26 · 1st
             </span>
-          </div>
+            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-bone-400">
+              <path
+                d="M2 8l6-6M3 2h5v5"
+                stroke="currentColor"
+                strokeWidth="1"
+                fill="none"
+              />
+            </svg>
+          </a>
           <Btn primary small href={GITHUB_URL} external>
             Open GitHub →
           </Btn>
