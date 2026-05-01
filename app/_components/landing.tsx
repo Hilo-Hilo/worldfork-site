@@ -174,6 +174,90 @@ function Wordmark() {
   );
 }
 
+/* ─────────── shared: theme toggle (auto / dark / light) ─────────── */
+
+type ThemePref = "auto" | "dark" | "light";
+
+function ThemeToggle() {
+  const [pref, setPref] = useState<ThemePref>("auto");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const stored = localStorage.getItem("theme");
+      if (stored === "light" || stored === "dark") {
+        setPref(stored);
+      } else {
+        setPref("auto");
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const apply = (p: ThemePref) => {
+      let resolved: "dark" | "light";
+      if (p === "auto") {
+        resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      } else {
+        resolved = p;
+      }
+      document.documentElement.setAttribute("data-theme", resolved);
+    };
+    apply(pref);
+    try {
+      if (pref === "auto") localStorage.removeItem("theme");
+      else localStorage.setItem("theme", pref);
+    } catch {
+      // ignore
+    }
+    if (pref === "auto") {
+      const mql = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => apply("auto");
+      mql.addEventListener("change", handler);
+      return () => mql.removeEventListener("change", handler);
+    }
+  }, [pref, mounted]);
+
+  const opts: { v: ThemePref; label: string }[] = [
+    { v: "auto", label: "auto" },
+    { v: "dark", label: "dark" },
+    { v: "light", label: "light" },
+  ];
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Theme"
+      className="hidden md:inline-flex items-center border hairline-strong rounded-none divide-x divide-[var(--hairline-color)] font-mono text-[10px] tracking-[0.14em] uppercase"
+    >
+      {opts.map((o) => {
+        const active = pref === o.v;
+        return (
+          <button
+            key={o.v}
+            role="radio"
+            aria-checked={active}
+            onClick={() => setPref(o.v)}
+            className={`px-2.5 py-1 transition-colors ${
+              active
+                ? "text-bone-100 bg-cool/10"
+                : "text-bone-400 hover:text-bone-100"
+            }`}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ─────────── shared: agent-prompt copy card ─────────── */
 
 function SetupPromptCard({
@@ -344,6 +428,7 @@ function Nav() {
               />
             </svg>
           </a>
+          <ThemeToggle />
           <Btn primary small href={GITHUB_URL} external>
             Open GitHub →
           </Btn>

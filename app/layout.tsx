@@ -38,7 +38,26 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geist.variable} ${jetbrainsMono.variable} antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                try {
+                  var stored = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var resolved = stored === 'light' || stored === 'dark' ? stored : (prefersDark ? 'dark' : 'light');
+                  document.documentElement.setAttribute('data-theme', resolved);
+                } catch(e) {
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-ink-900 text-bone-100">{children}</body>
     </html>
   );
