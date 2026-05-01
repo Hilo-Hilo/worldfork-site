@@ -111,7 +111,7 @@ export default function OGImage() {
             <div style={{ color: "#e8e9ec", fontSize: "22px" }}>
               github.com/Hilo-Hilo/WorldFork
             </div>
-            <div>FastAPI · LangGraph · OpenRouter · Docker</div>
+            <div>branching social simulation · open source</div>
           </div>
           <div
             style={{

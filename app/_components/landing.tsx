@@ -868,8 +868,8 @@ function Hero() {
             <div className="mt-5 grid grid-cols-3 gap-4">
               {[
                 ["1st", "HackTech '26"],
-                ["3.11+", "Python · Docker"],
-                ["FOSS", "MIT-spirited · self-host"],
+                ["audited", "every tick · every fork"],
+                ["Apache 2.0", "open source · self-host"],
               ].map(([n, l]) => (
                 <div key={l} className="border-l hairline-strong pl-3">
                   <div className="num text-[22px] md:text-[24px] text-bone-100 leading-none">
@@ -1122,7 +1122,7 @@ const STAGES = [
     key: "bigbang",
     label: "Big Bang",
     sub: "§04.a · scenario",
-    body: "Define initial conditions in YAML or via the API. Actors, world rules, decision schemas, branching constraints. WorldFork compiles this into a LangGraph.",
+    body: "Define initial conditions: actors, world rules, decision schemas, branching constraints. WorldFork compiles this into the runnable scenario graph.",
     detail: [
       "actors[]",
       "world.rules",
@@ -1141,12 +1141,12 @@ const STAGES = [
     key: "tick",
     label: "Tick runtime",
     sub: "§04.c · execution",
-    body: "Celery workers tick all live timelines in parallel against OpenRouter-backed agents. State checkpoints land in Postgres; ephemeral coordination through Redis.",
+    body: "Live timelines tick in parallel. Every state mutation is checkpointed so any run can be paused, resumed, inspected, or replayed safely.",
     detail: [
-      "celery.workers = 32",
-      "state → postgres",
-      "queues → redis",
-      "llm → openrouter",
+      "ticks.parallel",
+      "state.checkpointed",
+      "resume.safe",
+      "audit.streamed",
     ],
   },
   {
@@ -1165,12 +1165,12 @@ const STAGES = [
     key: "report",
     label: "Reports",
     sub: "§04.e · output",
-    body: "Each run emits a structured report — branch tree, per-timeline transcripts, audit log, statistical rollups. Exportable as JSON, Parquet, or rendered HTML.",
+    body: "Each run emits a structured report — branch tree, per-timeline transcripts, audit log, and statistical rollups. Render as Markdown or PDF.",
     detail: [
-      "tree.json",
-      "transcripts.parquet",
+      "branch.tree",
+      "transcripts",
       "audit.log",
-      "summary.html",
+      "render → md | pdf",
     ],
   },
 ];
@@ -1592,75 +1592,13 @@ function CLISection() {
   );
 }
 
-/* ─────────── 8. STACK ─────────── */
-
-function StackStrip() {
-  const items = [
-    { name: "FastAPI", role: "http surface" },
-    { name: "LangGraph", role: "graph runtime" },
-    { name: "Celery", role: "tick workers" },
-    { name: "Postgres", role: "state · checkpoints" },
-    { name: "Redis", role: "queues · coord" },
-    { name: "OpenRouter", role: "agent llms" },
-  ];
-  return (
-    <Section
-      id="stack"
-      label="§06 — built on"
-      title="Standing on tools that have already proved themselves at scale."
-    >
-      {/* editorial horizontal credits strip — replaces equal-card grid */}
-      <div className="relative border-y hairline-strong py-6 md:py-8 overflow-hidden">
-        <ul className="flex flex-wrap items-baseline gap-x-7 gap-y-4 md:gap-x-10">
-          {items.map((it) => (
-            <li
-              key={it.name}
-              className="flex items-baseline gap-2 md:gap-3"
-            >
-              <span className="text-[20px] md:text-[26px] font-medium tracking-[-0.02em] text-bone-100">
-                {it.name}
-              </span>
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-bone-400">
-                {it.role}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div
-          className="absolute inset-y-0 right-0 w-12 pointer-events-none bg-gradient-to-l from-ink-900 to-transparent"
-          aria-hidden="true"
-        />
-      </div>
-      <div className="mt-4 font-mono text-[11px] text-bone-400 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 bg-cool"></span>
-        Self-hostable. Run against your own LLM endpoints. No managed service
-        required.
-      </div>
-    </Section>
-  );
-}
-
-/* ─────────── 9. QUICKSTART ─────────── */
-
-const MANUAL_STEPS = [
-  { n: "01", t: "configure env", cmd: "cp .env.example .env  # set OPENROUTER_API_KEY" },
-  { n: "02", t: "install cli", cmd: "python3.11 -m pip install -e ./cli" },
-  { n: "03", t: "start stack", cmd: "make build && make up && make migrate && make seed" },
-  { n: "04", t: "first run", cmd: "worldfork init --name \"Atlas onboarding\" --scenario-file examples/test-big-bang.md --max-ticks 4" },
-];
+/* ─────────── 8. QUICKSTART ─────────── */
 
 function Quickstart() {
-  const [copied, setCopied] = useState<string | null>(null);
-  const [showManual, setShowManual] = useState(false);
-  const copy = (key: string, cmd: string) => {
-    navigator.clipboard?.writeText(cmd);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 1200);
-  };
   return (
     <Section
       id="quickstart"
-      label="§07 — quickstart"
+      label="§06 — quickstart"
       title="Paste one prompt into your agent. Done."
     >
       {/* AGENT PATH — recommended */}
@@ -1695,61 +1633,33 @@ function Quickstart() {
         </div>
       </div>
 
-      {/* MANUAL PATH — backup */}
-      <div className="mt-6">
-        <button
-          onClick={() => setShowManual((v) => !v)}
-          className="font-mono text-[11px] uppercase tracking-[0.14em] text-bone-400 hover:text-bone-100 inline-flex items-center gap-2"
-        >
-          <span>{showManual ? "−" : "+"}</span>
-          <span>manual setup (backup)</span>
-        </button>
-        {showManual && (
-          <div className="mt-4 border hairline">
-            {MANUAL_STEPS.map((s, i) => (
-              <div
-                key={s.n}
-                className="grid grid-cols-12 border-b last:border-b-0 hairline"
-              >
-                <div className="col-span-2 md:col-span-1 p-4 md:p-5 border-r hairline">
-                  <span className="font-mono text-[12px] text-bone-400">{s.n}</span>
-                </div>
-                <div className="col-span-10 md:col-span-3 p-4 md:p-5 border-r hairline">
-                  <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400">
-                    step
-                  </div>
-                  <div className="text-bone-100 mt-1">{s.t}</div>
-                </div>
-                <div className="col-span-12 md:col-span-8 p-4 md:p-5 flex items-center justify-between gap-3 bg-ink-950">
-                  <code className="font-mono text-[13px] text-bone-100 truncate">
-                    {s.cmd}
-                  </code>
-                  <button
-                    onClick={() => copy(`m${i}`, s.cmd)}
-                    className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
-                  >
-                    {copied === `m${i}` ? "copied" : "copy"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-4 font-mono text-[11px] text-bone-400">
-        Requires Python 3.11+, Docker Compose, Node 20+ for{" "}
-        <span className="text-bone-200">npx skills</span>, and an OpenRouter API
-        key. Full guide:{" "}
+      {/* MANUAL PATH — pointer to authoritative docs */}
+      <div className="mt-8 pt-6 border-t hairline flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-[12px] text-bone-400">
+        <span className="text-bone-500">manual setup →</span>
         <a
           href={SETUP_DOCS_URL}
           target="_blank"
           rel="noreferrer noopener"
-          className="text-cool hover:text-bone-100 underline-offset-4 hover:underline"
+          className="text-cool hover:text-bone-100"
         >
-          docs/setup
+          read the setup guide
         </a>
-        .
+        <a
+          href={`${GITHUB_URL}#readme`}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="hover:text-bone-100"
+        >
+          README
+        </a>
+        <a
+          href={`${GITHUB_URL}/blob/main/CONTRIBUTING.md`}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="hover:text-bone-100"
+        >
+          CONTRIBUTING
+        </a>
       </div>
     </Section>
   );
@@ -1898,26 +1808,15 @@ const FAQ_ITEMS: Array<[string, ReactNode]> = [
   [
     "Does it require a specific LLM?",
     <>
-      No. WorldFork ships with OpenRouter, so any supported model works. You
-      provide an OpenRouter key during setup. The example scenario recommends{" "}
-      <span className="font-mono text-bone-200">
-        google/gemini-3.1-flash-lite-preview
-      </span>{" "}
-      for cheap smoke runs.
-    </>,
-  ],
-  [
-    "Can I run it without Docker?",
-    <>
-      Docker Compose is the supported path. You need Python 3.11+, Docker,
-      and an OpenRouter key. Manual native installs are possible but not the
-      documented happy path.
+      No. WorldFork is model-agnostic — bring whichever model you prefer. The
+      example scenario recommends a cheap, fast model for smoke runs and a
+      stronger one for full demonstrations.
     </>,
   ],
   [
     "What license?",
     <>
-      MIT-spirited. See the{" "}
+      Apache License 2.0. See the{" "}
       <a
         href={`${GITHUB_URL}/blob/main/LICENSE`}
         target="_blank"
@@ -1926,7 +1825,16 @@ const FAQ_ITEMS: Array<[string, ReactNode]> = [
       >
         LICENSE
       </a>{" "}
-      file in the GitHub repository for the full text.
+      and{" "}
+      <a
+        href={`${GITHUB_URL}/blob/main/NOTICE`}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="text-cool hover:text-cool-soft"
+      >
+        NOTICE
+      </a>{" "}
+      files in the repository for the full text.
     </>,
   ],
   [
@@ -1935,7 +1843,7 @@ const FAQ_ITEMS: Array<[string, ReactNode]> = [
       Paste the prompt at the top of this page into Claude Code, Cursor, or
       any coding agent. The official{" "}
       <span className="font-mono text-bone-200">worldfork-setup</span> skill
-      handles repo clone, Docker bring-up, and first-run validation.
+      handles repo clone, environment bring-up, and first-run validation.
     </>,
   ],
   [
@@ -1960,7 +1868,7 @@ function FAQ() {
   return (
     <Section
       id="faq"
-      label="§08 — faq"
+      label="§07 — faq"
       title="Common questions, plainly answered."
     >
       <dl className="grid md:grid-cols-2 gap-x-10 gap-y-8 mt-4">
@@ -2090,7 +1998,7 @@ function Footer() {
             <time dateTime={String(new Date().getFullYear())}>
               {new Date().getFullYear()}
             </time>{" "}
-            WorldFork · open source · HackTech &apos;26 · this site sets no
+            WorldFork contributors · Apache License 2.0 · this site sets no
             cookies and runs no analytics
           </div>
           <div className="flex items-center gap-5">
@@ -2181,7 +2089,6 @@ export default function Landing() {
       <HowItWorks />
       <CLISection />
       <Showcase />
-      <StackStrip />
       <Quickstart />
       <FAQ />
       <Footer />
