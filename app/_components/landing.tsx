@@ -706,22 +706,6 @@ function Hero() {
               </div>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
-              {[
-                ["1st", "HackTech '26"],
-                ["3.11+", "Python · Docker"],
-                ["FOSS", "MIT-spirited · self-host"],
-              ].map(([n, l]) => (
-                <div key={l} className="border-l hairline-strong pl-3">
-                  <div className="num text-[24px] text-bone-100 leading-none">
-                    {n}
-                  </div>
-                  <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mt-2 leading-tight">
-                    {l}
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className="md:col-span-7 lg:col-span-7">
@@ -757,6 +741,24 @@ function Hero() {
                 </div>
                 <span>seed=11 / depth=5</span>
               </div>
+            </div>
+
+            {/* stat boxes — moved here to balance hero weight */}
+            <div className="mt-5 grid grid-cols-3 gap-4">
+              {[
+                ["1st", "HackTech '26"],
+                ["3.11+", "Python · Docker"],
+                ["FOSS", "MIT-spirited · self-host"],
+              ].map(([n, l]) => (
+                <div key={l} className="border-l hairline-strong pl-3">
+                  <div className="num text-[22px] md:text-[24px] text-bone-100 leading-none">
+                    {n}
+                  </div>
+                  <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bone-400 mt-2 leading-tight">
+                    {l}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
