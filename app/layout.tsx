@@ -18,12 +18,12 @@ export const metadata: Metadata = {
   title: "WorldFork — Fork the world.",
   description:
     "Agent-operated branching social simulation. Spin up a Big Bang, let agents tick it forward, branch on consequential decisions, audit each timeline, read the structured report.",
-  metadataBase: new URL("https://worldfork.tech"),
+  metadataBase: new URL("https://worldfork-site.vercel.app"),
   openGraph: {
     title: "WorldFork — Fork the world.",
     description:
-      "Agent-operated branching social simulation. HackTech '26 1st place.",
-    url: "https://worldfork.tech",
+      "Open-source branching social simulation infrastructure. HackTech '26 1st place.",
+    url: "https://worldfork-site.vercel.app",
     siteName: "WorldFork",
     type: "website",
   },

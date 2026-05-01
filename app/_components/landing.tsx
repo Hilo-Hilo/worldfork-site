@@ -169,7 +169,7 @@ function Wordmark() {
       <span className="font-mono text-[15px] font-medium tracking-tight text-bone-100">
         worldfork
       </span>
-      <span className="font-mono text-[11px] text-bone-400">/v0.4</span>
+      <span className="font-mono text-[11px] text-bone-400">/oss</span>
     </div>
   );
 }
@@ -297,7 +297,7 @@ function Nav() {
             CLI
           </a>
           <a href="#stack" className="hover:text-bone-100 transition-colors">
-            Architecture
+            Stack
           </a>
           <a
             href={DOCS_URL}
@@ -409,11 +409,6 @@ function buildTree(seed = 7): Tree {
 
 function HeroTree() {
   const { nodes, edges } = useMemo(() => buildTree(11), []);
-  const [t, setT] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setT((x) => x + 1), 1100);
-    return () => clearInterval(id);
-  }, []);
 
   const auditedIds = useMemo(
     () =>
@@ -448,7 +443,7 @@ function HeroTree() {
 
   return (
     <div className="relative w-full h-full">
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none hidden md:block">
         {tickColumns.map((cx, i) => (
           <div
             key={i}
@@ -610,54 +605,12 @@ function HeroTree() {
 
         <g
           fontFamily="JetBrains Mono, monospace"
-          fontSize="9.5"
-          fill="#9AA0AB"
-          letterSpacing="0.6"
-        >
-          <line
-            x1="540"
-            y1="100"
-            x2="588"
-            y2="138"
-            stroke="rgba(255,255,255,0.15)"
-            strokeWidth="0.5"
-          />
-          <text x="430" y="98">
-            ⌐ branch_event=ELECTION_OUTCOME
-          </text>
-          <line
-            x1="675"
-            y1="395"
-            x2="700"
-            y2="380"
-            stroke="rgba(255,255,255,0.15)"
-            strokeWidth="0.5"
-          />
-          <text x="555" y="408">
-            ⌐ pruned: violates audit constraints
-          </text>
-          <line
-            x1="685"
-            y1="220"
-            x2="715"
-            y2="232"
-            stroke="rgba(255,255,255,0.15)"
-            strokeWidth="0.5"
-          />
-          <text x="600" y="218">
-            ⌐ god-agent audit ✓
-          </text>
-        </g>
-
-        <g
-          fontFamily="JetBrains Mono, monospace"
           fontSize="10"
           fill="#6B7079"
         >
           <text x="14" y="510">
-            tick {String(t).padStart(4, "0")} · nodes {nodes.length} · branches{" "}
-            {edges.length} · audited {auditedIds.size} · pruned{" "}
-            {prunedIds.size}
+            nodes {nodes.length} · branches {edges.length} · audited{" "}
+            {auditedIds.size} · pruned {prunedIds.size}
           </text>
         </g>
       </svg>
@@ -676,7 +629,7 @@ function Hero() {
           <div className="flex items-center gap-4">
             <span>§01 / hero</span>
             <span className="hidden sm:inline">scenario.yaml</span>
-            <span className="hidden md:inline">commit 9af31b2</span>
+            <span className="hidden md:inline text-bone-500">// example</span>
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden md:inline">runtime: ready</span>
@@ -697,40 +650,58 @@ function Hero() {
                 <span className="absolute -right-3 top-1 w-2 h-[78%] bg-cool blink"></span>
               </span>
             </h1>
-            <p className="mt-6 text-[15px] md:text-[16px] leading-relaxed text-bone-300 max-w-md">
-              Spin up a Big Bang, let agents tick it forward, branch on
-              consequential decisions, audit each timeline, read the structured
-              report.
+            <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-tight">
+              One scenario. Many timelines. Audited.
+            </p>
+            <p className="mt-4 text-[14.5px] md:text-[15px] leading-relaxed text-bone-300 max-w-md">
+              Backend infrastructure for branching social simulations — agents
+              tick it forward, fork on consequential decisions, audit each
+              timeline, read the structured report.
             </p>
 
+            {/* social proof strip */}
+            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[10.5px] tracking-[0.12em] uppercase text-bone-400">
+              <a
+                href="https://devpost.com/software/worldfork-tech"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center gap-1.5 hover:text-bone-100"
+              >
+                <span className="w-1.5 h-1.5 bg-cool"></span>
+                HackTech &apos;26 · 1st place
+              </a>
+              <span className="text-bone-500">·</span>
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-bone-100"
+              >
+                Open source on GitHub
+              </a>
+              <span className="text-bone-500">·</span>
+              <a
+                href={DOCS_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-bone-100"
+              >
+                Read the docs
+              </a>
+            </div>
+
             {/* primary action — agent-paste setup prompt */}
-            <div className="mt-7 max-w-xl">
+            <div className="mt-6 max-w-xl">
               <SetupPromptCard prompt={AGENT_INSTALL_PROMPT} />
-              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11.5px] text-bone-400">
-                <a
-                  href={GITHUB_URL}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="hover:text-bone-100 inline-flex items-center gap-1.5"
-                >
-                  <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-                  Open GitHub
-                </a>
-                <a
-                  href={DOCS_URL}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="hover:text-bone-100"
-                >
-                  Open docs
-                </a>
+              <div className="mt-3 font-mono text-[11px] text-bone-500">
+                or{" "}
                 <a
                   href={DEEPWIKI_URL}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="hover:text-bone-100"
+                  className="text-bone-300 hover:text-bone-100 underline-offset-4 hover:underline"
                 >
-                  DeepWiki
+                  explore on DeepWiki
                 </a>
               </div>
             </div>
@@ -738,8 +709,8 @@ function Hero() {
             <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
               {[
                 ["1st", "HackTech '26"],
-                ["128", "parallel timelines / run"],
-                ["v0.4", "CLI + HTTP API"],
+                ["3.11+", "Python · Docker"],
+                ["FOSS", "MIT-spirited · self-host"],
               ].map(([n, l]) => (
                 <div key={l} className="border-l hairline-strong pl-3">
                   <div className="num text-[24px] text-bone-100 leading-none">
@@ -759,10 +730,10 @@ function Hero() {
               <div className="flex items-center justify-between px-4 py-2.5 border-b hairline font-mono text-[10.5px] text-bone-400">
                 <div className="flex items-center gap-4">
                   <span>fig.01</span>
-                  <span>multiverse / scenario:berlin-1989</span>
+                  <span>multiverse / example</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="hidden sm:inline">drawing 23,041 edges</span>
+                  <span className="hidden sm:inline">seed=11 · depth=5</span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 bg-cool"></span>live
                   </span>
@@ -881,7 +852,7 @@ function MiniTree({ tree, t }: { tree: Tree; t: number }) {
 function ConceptLineVsTree() {
   const [t, setT] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setT((x) => x + 1), 90);
+    const id = setInterval(() => setT((x) => x + 1), 240);
     return () => clearInterval(id);
   }, []);
 
@@ -1446,7 +1417,7 @@ function CLISection() {
           </div>
           <div className="mt-3 font-mono text-[11px] text-bone-400 flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-cool"></span>
-            CLI is the supported surface today. Web UI is in private alpha.
+            CLI is the supported surface today. Web UI shipping soon.
           </div>
         </div>
       </div>
@@ -1468,8 +1439,8 @@ function StackStrip() {
   return (
     <Section
       id="stack"
-      label="§07 — architecture"
-      title="Built on tools that have already proved themselves at scale."
+      label="§07 — built on"
+      title="Standing on tools that have already proved themselves at scale."
     >
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border hairline">
         {items.map((it, i) => (
@@ -1688,7 +1659,7 @@ function Footer() {
         </div>
         <div className="mt-12 pt-6 border-t hairline flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-mono text-[11px] text-bone-500">
           <div>
-            © 2026 WorldFork Labs · made for researchers, by researchers
+            © 2026 WorldFork · open source · HackTech &apos;26
           </div>
           <div className="flex items-center gap-5">
             <a
@@ -1714,11 +1685,57 @@ function Footer() {
   );
 }
 
+/* ─────────── mobile sticky CTA ─────────── */
+
+function MobileStickyCTA() {
+  const [visible, setVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const copy = () => {
+    navigator.clipboard?.writeText(AGENT_INSTALL_PROMPT);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div
+      className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-cool/40 bg-ink-950/95 backdrop-blur transition-transform ${
+        visible ? "translate-y-0" : "translate-y-full"
+      }`}
+      role="region"
+      aria-label="Setup actions"
+    >
+      <div className="flex">
+        <button
+          onClick={copy}
+          className={`flex-1 px-4 py-3.5 font-mono text-[12px] uppercase tracking-[0.14em] inline-flex items-center justify-center gap-2 ${
+            copied ? "bg-cool text-ink-950" : "bg-cool/15 text-cool"
+          }`}
+        >
+          {copied ? "✓ copied" : "▸ copy setup"}
+        </button>
+        <a
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="flex-1 px-4 py-3.5 border-l border-cool/30 font-mono text-[12px] uppercase tracking-[0.14em] inline-flex items-center justify-center gap-2 text-bone-100"
+        >
+          GitHub →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 /* ─────────── ROOT ─────────── */
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-ink-900 text-bone-100">
+    <div className="min-h-screen bg-ink-900 text-bone-100 pb-16 md:pb-0">
       <Nav />
       <Hero />
       <ConceptLineVsTree />
@@ -1727,6 +1744,7 @@ export default function Landing() {
       <StackStrip />
       <Quickstart />
       <Footer />
+      <MobileStickyCTA />
     </div>
   );
 }
