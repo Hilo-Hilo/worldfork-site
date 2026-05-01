@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+      className={`${geist.variable} ${jetbrainsMono.variable} antialiased`}
     >
       <body className="min-h-screen bg-ink-900 text-bone-100">{children}</body>
     </html>

@@ -60,7 +60,7 @@ function Section({
               </div>
             )}
             {title && (
-              <h2 className="md:col-span-9 text-3xl md:text-[44px] leading-[1.05] font-medium tracking-tight text-bone-100 max-w-3xl">
+              <h2 className="md:col-span-9 text-3xl md:text-[44px] leading-[1.05] font-medium tracking-[-0.025em] text-bone-100 max-w-3xl text-balance">
                 {title}
               </h2>
             )}
@@ -115,7 +115,7 @@ function Btn({
         href={href}
         onClick={onClick}
         {...externalProps}
-        className={`${base} ${className} inline-flex items-center gap-2 font-mono tracking-wide bg-cool text-ink-950 hover:bg-cool-soft transition-colors border border-cool`}
+        className={`${base} ${className} inline-flex items-center gap-2 font-mono tracking-wide bg-cool text-ink-950 hover:bg-cool-soft active:scale-[0.98] transition-all duration-150 border border-cool`}
       >
         {children}
       </a>
@@ -126,7 +126,7 @@ function Btn({
       href={href}
       onClick={onClick}
       {...externalProps}
-      className={`${base} ${className} inline-flex items-center gap-2 font-mono tracking-wide text-bone-100 border border-bone-100/15 hover:border-bone-100/40 hover:bg-white/[0.03] transition-colors`}
+      className={`${base} ${className} inline-flex items-center gap-2 font-mono tracking-wide text-bone-100 border border-bone-100/15 hover:border-bone-100/40 hover:bg-white/[0.03] active:scale-[0.98] transition-all duration-150`}
     >
       {children}
     </a>
@@ -193,7 +193,7 @@ function SetupPromptCard({
     <div
       className={`relative border bg-ink-950 ${
         variant === "hero"
-          ? "border-cool/60 shadow-[0_0_0_1px_rgba(74,158,255,0.15),0_18px_60px_-15px_rgba(74,158,255,0.35)]"
+          ? "border-cool/60 shadow-cool"
           : "border-cool/40"
       }`}
     >
@@ -642,7 +642,7 @@ function Hero() {
         <div className="grid md:grid-cols-12 gap-10 md:gap-8">
           <div className="md:col-span-5 lg:col-span-5">
             <Mono>§01 — agent-operated branching social simulation</Mono>
-            <h1 className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.03em] text-bone-100">
+            <h1 className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 text-balance">
               Fork the
               <br />
               <span className="relative inline-block">
@@ -650,10 +650,10 @@ function Hero() {
                 <span className="absolute -right-3 top-1 w-2 h-[78%] bg-cool blink"></span>
               </span>
             </h1>
-            <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-tight">
+            <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-[-0.015em] text-balance">
               One scenario. Many timelines. Audited.
             </p>
-            <p className="mt-4 text-[14.5px] md:text-[15px] leading-relaxed text-bone-300 max-w-md">
+            <p className="mt-4 text-[14.5px] md:text-[15px] leading-relaxed text-bone-300 max-w-md text-pretty">
               Backend infrastructure for branching social simulations — agents
               tick it forward, fork on consequential decisions, audit each
               timeline, read the structured report.
@@ -1192,7 +1192,7 @@ function HowItWorks() {
                 {String(active + 1).padStart(2, "0")} / 05
               </span>
             </div>
-            <h3 className="mt-3 text-2xl md:text-3xl font-medium tracking-tight text-bone-100">
+            <h3 className="mt-3 text-2xl md:text-3xl font-medium tracking-[-0.02em] text-bone-100 text-balance">
               {STAGES[active].label}
             </h3>
             <p className="mt-3 text-[14px] leading-relaxed text-bone-300 max-w-md">
@@ -1444,23 +1444,27 @@ function StackStrip() {
       label="§07 — built on"
       title="Standing on tools that have already proved themselves at scale."
     >
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border hairline">
-        {items.map((it, i) => (
-          <div
-            key={it.name}
-            className={`p-5 md:p-6 border-r border-b hairline last:border-r-0 ${
-              i % 3 === 2 ? "lg:border-r-0" : ""
-            } ${i >= 3 ? "md:border-b-0" : ""}`}
-          >
-            <Mono>0{i + 1}</Mono>
-            <div className="mt-3 text-[18px] md:text-[20px] font-medium text-bone-100 tracking-tight">
-              {it.name}
-            </div>
-            <div className="mt-1 font-mono text-[11px] text-bone-400">
-              {it.role}
-            </div>
-          </div>
-        ))}
+      {/* editorial horizontal credits strip — replaces equal-card grid */}
+      <div className="relative border-y hairline-strong py-6 md:py-8 overflow-hidden">
+        <ul className="flex flex-wrap items-baseline gap-x-7 gap-y-4 md:gap-x-10">
+          {items.map((it) => (
+            <li
+              key={it.name}
+              className="flex items-baseline gap-2 md:gap-3"
+            >
+              <span className="text-[20px] md:text-[26px] font-medium tracking-[-0.02em] text-bone-100">
+                {it.name}
+              </span>
+              <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-bone-400">
+                {it.role}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div
+          className="absolute inset-y-0 right-0 w-12 pointer-events-none bg-gradient-to-l from-ink-900 to-transparent"
+          aria-hidden="true"
+        />
       </div>
       <div className="mt-4 font-mono text-[11px] text-bone-400 flex items-center gap-2">
         <span className="w-1.5 h-1.5 bg-cool"></span>
@@ -1737,7 +1741,9 @@ function MobileStickyCTA() {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-ink-900 text-bone-100 pb-16 md:pb-0">
+    <div className="min-h-screen bg-ink-900 text-bone-100 pb-16 md:pb-0 relative">
+      <a href="#top" className="skip-link">skip to content</a>
+      <span className="grain" aria-hidden="true" />
       <Nav />
       <Hero />
       <ConceptLineVsTree />

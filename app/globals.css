@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-sans: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
 
   --color-ink-950: #08090b;
@@ -28,6 +28,10 @@
   --color-foreground: #e8e9ec;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   background: var(--color-ink-900);
@@ -36,7 +40,63 @@ body {
 
 body {
   font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11", "cv05";
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* skip-to-content for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 12px;
+  z-index: 100;
+  padding: 8px 14px;
+  background: var(--color-cool);
+  color: var(--color-ink-950);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* tinted cool-blue shadow utility */
+.shadow-cool {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 18px 60px -15px rgba(74, 158, 255, 0.32),
+    0 4px 18px -8px rgba(74, 158, 255, 0.18);
+}
+
+/* premium typography wrapping */
+.text-balance {
+  text-wrap: balance;
+}
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* very subtle film grain overlay (fixed, ignores pointer) */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* unified focus ring */
+:where(a, button, input, [role="button"]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-ink-900), 0 0 0 3px rgba(74, 158, 255, 0.7);
+  border-radius: 2px;
 }
 
 .num {
