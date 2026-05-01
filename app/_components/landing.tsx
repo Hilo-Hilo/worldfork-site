@@ -291,31 +291,81 @@ function ThemeToggle() {
     { v: "light", label: "light" },
   ];
 
+  // mobile: cycle auto → dark → light → auto on a single icon button
+  const cycleNext: ThemePref =
+    pref === "auto" ? "dark" : pref === "dark" ? "light" : "auto";
+  const icon =
+    pref === "auto" ? (
+      <svg viewBox="0 0 14 14" className="w-3.5 h-3.5" aria-hidden="true">
+        <circle
+          cx="7"
+          cy="7"
+          r="5.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+        />
+        <path d="M7 1.5 A 5.5 5.5 0 0 1 7 12.5 Z" fill="currentColor" />
+      </svg>
+    ) : pref === "dark" ? (
+      <svg viewBox="0 0 14 14" className="w-3.5 h-3.5" aria-hidden="true">
+        <path
+          d="M11.5 8.5 A 5 5 0 1 1 5.5 2.5 A 4 4 0 0 0 11.5 8.5 Z"
+          fill="currentColor"
+        />
+      </svg>
+    ) : (
+      <svg viewBox="0 0 14 14" className="w-3.5 h-3.5" aria-hidden="true">
+        <circle
+          cx="7"
+          cy="7"
+          r="2.6"
+          fill="currentColor"
+        />
+        <g stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+          <path d="M7 1 v1.6 M7 11.4 v1.6 M1 7 h1.6 M11.4 7 h1.6 M2.6 2.6 l1.1 1.1 M10.3 10.3 l1.1 1.1 M2.6 11.4 l1.1 -1.1 M10.3 3.7 l1.1 -1.1" />
+        </g>
+      </svg>
+    );
+
   return (
-    <div
-      role="radiogroup"
-      aria-label="Theme"
-      className="hidden md:inline-flex items-center border hairline-strong rounded-none divide-x divide-[var(--hairline-color)] font-mono text-[10px] tracking-[0.14em] uppercase"
-    >
-      {opts.map((o) => {
-        const active = pref === o.v;
-        return (
-          <button
-            key={o.v}
-            role="radio"
-            aria-checked={active}
-            onClick={(e) => select(o.v, e)}
-            className={`px-2.5 py-1 transition-colors ${
-              active
-                ? "text-bone-100 bg-cool/10"
-                : "text-bone-400 hover:text-bone-100"
-            }`}
-          >
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      {/* desktop: segmented 3-state radiogroup */}
+      <div
+        role="radiogroup"
+        aria-label="Theme"
+        className="hidden md:inline-flex items-center border hairline-strong rounded-none divide-x divide-[var(--hairline-color)] font-mono text-[10px] tracking-[0.14em] uppercase"
+      >
+        {opts.map((o) => {
+          const active = pref === o.v;
+          return (
+            <button
+              key={o.v}
+              role="radio"
+              aria-checked={active}
+              onClick={(e) => select(o.v, e)}
+              className={`px-2.5 py-1 transition-colors ${
+                active
+                  ? "text-bone-100 bg-cool/10"
+                  : "text-bone-400 hover:text-bone-100"
+              }`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* mobile: single icon button cycling through the three states */}
+      <button
+        type="button"
+        onClick={(e) => select(cycleNext, e)}
+        aria-label={`Theme: ${pref}. Tap to switch to ${cycleNext}.`}
+        className="md:hidden inline-flex items-center justify-center w-8 h-8 border hairline-strong text-bone-300 hover:text-bone-100 hover:border-cool/60 transition-colors"
+      >
+        {icon}
+      </button>
+    </>
   );
 }
 
