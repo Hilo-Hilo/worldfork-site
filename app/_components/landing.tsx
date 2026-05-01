@@ -878,7 +878,7 @@ function Hero() {
 
 /* ─────────── 4. CONCEPT ─────────── */
 
-function MiniTree({ tree, t }: { tree: Tree; t: number }) {
+function MiniTree({ tree }: { tree: Tree }) {
   const path = (e: { from: { x: number; y: number }; to: { x: number; y: number } }) => {
     const dx = e.to.x - e.from.x;
     return `M ${e.from.x} ${e.from.y} C ${e.from.x + dx * 0.5} ${e.from.y}, ${
@@ -958,12 +958,6 @@ function MiniTree({ tree, t }: { tree: Tree; t: number }) {
       >
         t=8
       </text>
-      {/* prevent unused t warning by minor decorative behaviour */}
-      <g style={{ opacity: 0.0001 }}>
-        <text x="0" y="0">
-          {t}
-        </text>
-      </g>
     </svg>
   );
 }
@@ -1097,7 +1091,7 @@ function ConceptLineVsTree() {
               }}
             />
             <div className="absolute inset-0">
-              <MiniTree tree={tree} t={t} />
+              <MiniTree tree={tree} />
             </div>
           </div>
           <div className="mt-5 font-mono text-[12px] text-bone-200 leading-relaxed">
@@ -2068,7 +2062,8 @@ function Footer() {
         </div>
         <div className="mt-12 pt-6 border-t hairline flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-mono text-[11px] text-bone-500">
           <div>
-            © 2026 WorldFork · open source · HackTech &apos;26
+            © {new Date().getFullYear()} WorldFork · open source · HackTech
+            &apos;26
           </div>
           <div className="flex items-center gap-5">
             <a
@@ -2146,9 +2141,10 @@ export default function Landing() {
   return (
     <main
       id="main"
-      className="min-h-screen bg-ink-900 text-bone-100 pb-16 md:pb-0 relative"
+      className="min-h-[100dvh] bg-ink-900 text-bone-100 pb-16 md:pb-0 relative"
     >
       <span className="grain" aria-hidden="true" />
+      <span className="scroll-progress" aria-hidden="true" />
       <Nav />
       <Hero />
       <ConceptLineVsTree />

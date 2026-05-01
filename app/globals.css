@@ -32,6 +32,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* anchor-scroll offset so the sticky nav doesn't cover section heads */
+:where(section[id], [id="main"]) {
+  scroll-margin-top: 80px;
+}
+
 /* light theme — inverts the ink/bone token gradients and swaps surface chrome */
 :root[data-theme="light"] {
   --color-ink-950: #ffffff;
@@ -414,4 +419,45 @@ details > summary {
 }
 details > summary::-webkit-details-marker {
   display: none;
+}
+
+/* scroll progress bar — CSS-only via scroll-driven animation; no-op fallback */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 60;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-cool) 18%,
+    var(--color-cool) 82%,
+    transparent 100%
+  );
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  pointer-events: none;
+  opacity: 0.85;
+}
+@supports (animation-timeline: scroll(root)) {
+  .scroll-progress {
+    animation: scroll-grow linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes scroll-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress {
+    animation: none !important;
+    opacity: 0;
+  }
 }

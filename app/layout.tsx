@@ -209,12 +209,19 @@ export default function RootLayout({
             `,
           }}
         />
+        <link rel="dns-prefetch" href="https://github.com" />
+        <link rel="dns-prefetch" href="https://worldfork.readthedocs.io" />
+        <link rel="dns-prefetch" href="https://deepwiki.com" />
+        <link rel="dns-prefetch" href="https://devpost.com" />
         <link
           rel="alternate"
           type="text/plain"
           title="LLM-friendly site summary"
           href="/llms.txt"
         />
+        <noscript>
+          <style>{`html:not([data-theme]) { color-scheme: dark; }`}</style>
+        </noscript>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -222,7 +229,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-ink-900 text-bone-100">
+      <body className="min-h-[100dvh] bg-ink-900 text-bone-100">
         <a href="#main" className="skip-link">
           Skip to content
         </a>
