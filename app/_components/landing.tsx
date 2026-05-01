@@ -49,7 +49,7 @@ function Section({
 }) {
   return (
     <section id={id} className={`relative border-t hairline ${className}`}>
-      <div className="max-w-[1240px] mx-auto px-6 md:px-10">
+      <div className="max-w-[1240px] mx-auto px-6 md:px-10 pb-16 md:pb-24">
         {(label || title) && (
           <div className="pt-10 md:pt-16 pb-6 md:pb-10 grid md:grid-cols-12 gap-6">
             {label && (
@@ -1921,7 +1921,7 @@ function FAQ() {
 
 function Footer() {
   return (
-    <footer className="border-t hairline mt-20">
+    <footer className="border-t hairline">
       <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-12">
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-5">
