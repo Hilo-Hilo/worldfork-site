@@ -81,6 +81,28 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* theme-toggle reveal — circular wipe from the click point.
+   Old layer holds steady underneath; new layer is clip-path animated
+   by JS in ThemeToggle.select(). Falls back to default crossfade
+   if the browser doesn't support View Transitions. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
 body {
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11", "cv05";

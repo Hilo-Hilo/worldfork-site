@@ -188,6 +188,15 @@ function Wordmark() {
 
 type ThemePref = "auto" | "dark" | "light";
 
+function resolveTheme(p: ThemePref): "dark" | "light" {
+  if (p === "auto") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+  return p;
+}
+
 function ThemeToggle() {
   const [pref, setPref] = useState<ThemePref>("auto");
   const [mounted, setMounted] = useState(false);
@@ -208,18 +217,7 @@ function ThemeToggle() {
 
   useEffect(() => {
     if (!mounted) return;
-    const apply = (p: ThemePref) => {
-      let resolved: "dark" | "light";
-      if (p === "auto") {
-        resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-      } else {
-        resolved = p;
-      }
-      document.documentElement.setAttribute("data-theme", resolved);
-    };
-    apply(pref);
+    document.documentElement.setAttribute("data-theme", resolveTheme(pref));
     try {
       if (pref === "auto") localStorage.removeItem("theme");
       else localStorage.setItem("theme", pref);
@@ -228,11 +226,64 @@ function ThemeToggle() {
     }
     if (pref === "auto") {
       const mql = window.matchMedia("(prefers-color-scheme: dark)");
-      const handler = () => apply("auto");
+      const handler = () =>
+        document.documentElement.setAttribute(
+          "data-theme",
+          resolveTheme("auto")
+        );
       mql.addEventListener("change", handler);
       return () => mql.removeEventListener("change", handler);
     }
   }, [pref, mounted]);
+
+  const select = (next: ThemePref, e: React.MouseEvent<HTMLButtonElement>) => {
+    if (next === pref) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+    };
+    const willMatchCurrent = resolveTheme(next) === resolveTheme(pref);
+
+    if (!doc.startViewTransition || reduced || willMatchCurrent) {
+      setPref(next);
+      return;
+    }
+
+    // anchor the circular reveal at the clicked button's center
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    const transition = doc.startViewTransition(() => {
+      // synchronously update the DOM so the view-transition snapshot
+      // captures the new theme immediately, then let React catch up
+      document.documentElement.setAttribute(
+        "data-theme",
+        resolveTheme(next)
+      );
+      setPref(next);
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 520,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    });
+  };
 
   const opts: { v: ThemePref; label: string }[] = [
     { v: "auto", label: "auto" },
@@ -253,7 +304,7 @@ function ThemeToggle() {
             key={o.v}
             role="radio"
             aria-checked={active}
-            onClick={() => setPref(o.v)}
+            onClick={(e) => select(o.v, e)}
             className={`px-2.5 py-1 transition-colors ${
               active
                 ? "text-bone-100 bg-cool/10"
