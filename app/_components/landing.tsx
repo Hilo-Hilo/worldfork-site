@@ -1509,10 +1509,17 @@ function CLISection() {
                   ~/wf · zsh
                 </span>
               </div>
-              <div className="flex items-center gap-1">
+              <div
+                role="tablist"
+                aria-label="CLI command examples"
+                className="flex items-center gap-1"
+              >
                 {CLI_TABS.map((c, i) => (
                   <button
                     key={c.key}
+                    role="tab"
+                    aria-selected={i === tab}
+                    aria-controls="cli-output"
                     onClick={() => setTab(i)}
                     className={`px-3 py-1 font-mono text-[11px] tracking-wide border-l hairline ${
                       i === tab
@@ -1535,13 +1542,20 @@ function CLISection() {
               </div>
               <button
                 onClick={copy}
+                aria-label={`Copy command: ${t.cmd.replace(/^\$ /, "")}`}
+                aria-live="polite"
                 className="shrink-0 font-mono text-[10.5px] uppercase tracking-[0.14em] border hairline px-2.5 py-1 text-bone-300 hover:text-bone-100 hover:border-bone-100/40 transition-colors"
               >
                 {copied ? "copied" : "copy"}
               </button>
             </div>
 
-            <div className="px-5 pt-3 pb-6 font-mono text-[12.5px] leading-[1.7] scan min-h-[230px]">
+            <div
+              id="cli-output"
+              role="tabpanel"
+              aria-live="polite"
+              className="px-5 pt-3 pb-6 font-mono text-[12.5px] leading-[1.7] scan min-h-[230px]"
+            >
               {t.out.slice(0, revealed).map(([tag, line], i) => (
                 <div key={i} className="flex gap-3">
                   <span
