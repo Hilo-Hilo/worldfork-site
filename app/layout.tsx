@@ -108,12 +108,64 @@ const STRUCTURED_DATA = {
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       author: {
         "@type": "Organization",
+        "@id": `${SITE_URL}/#author`,
         name: "Hilo-Hilo",
         url: "https://github.com/Hilo-Hilo",
+        sameAs: [
+          "https://github.com/Hilo-Hilo/WorldFork",
+          "https://devpost.com/software/worldfork-tech",
+          "https://deepwiki.com/Hilo-Hilo/WorldFork",
+        ],
       },
+      sameAs: [
+        "https://github.com/Hilo-Hilo/WorldFork",
+        "https://devpost.com/software/worldfork-tech",
+        "https://deepwiki.com/Hilo-Hilo/WorldFork",
+        "https://worldfork.readthedocs.io/en/latest/",
+      ],
       award: "HackTech '26 — 1st place",
       keywords:
         "branching simulation, multiverse, agent infrastructure, LangGraph, FastAPI, OpenRouter, auditable AI",
+    },
+    {
+      "@type": "HowTo",
+      "@id": `${SITE_URL}/#install`,
+      name: "Install WorldFork using a coding agent",
+      description:
+        "Install WorldFork with a single agent prompt that runs the official setup skill, configures the environment, brings up the Docker stack, and runs the onboarding demo.",
+      totalTime: "PT15M",
+      tool: [
+        { "@type": "HowToTool", name: "A coding agent (Claude Code, Cursor, etc.)" },
+        { "@type": "HowToTool", name: "Docker Compose" },
+        { "@type": "HowToTool", name: "Python 3.11 or later" },
+        { "@type": "HowToTool", name: "OpenRouter API key" },
+      ],
+      step: [
+        {
+          "@type": "HowToStep",
+          position: 1,
+          name: "Paste the install prompt",
+          text: 'Drop this prompt into your coding agent: "Run this command to install the WorldFork setup skill, then use it to set up WorldFork: npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all".',
+        },
+        {
+          "@type": "HowToStep",
+          position: 2,
+          name: "Agent installs the skill",
+          text: "The agent runs npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all to install the official setup skill.",
+        },
+        {
+          "@type": "HowToStep",
+          position: 3,
+          name: "Agent walks through prerequisites",
+          text: "The skill validates Python, Docker, and the OpenRouter API key, then writes a .env file and prepares the runtime.",
+        },
+        {
+          "@type": "HowToStep",
+          position: 4,
+          name: "Agent runs the onboarding demo",
+          text: "The skill brings up the Docker stack, runs migrations, seeds the database, and executes a short demo run to confirm readiness.",
+        },
+      ],
     },
     {
       "@type": "WebSite",

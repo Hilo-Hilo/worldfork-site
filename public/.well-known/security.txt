@@ -1,0 +1,6 @@
+# If you've found a security issue with WorldFork, please report it via GitHub.
+Contact: https://github.com/Hilo-Hilo/WorldFork/security/advisories/new
+Contact: https://github.com/Hilo-Hilo/WorldFork/issues
+Expires: 2027-05-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://worldfork-site.vercel.app/.well-known/security.txt
