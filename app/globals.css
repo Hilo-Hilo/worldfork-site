@@ -37,6 +37,14 @@ html {
   scroll-margin-top: 80px;
 }
 
+/* hide tiny scaffolding text inside SVG diagrams on small screens —
+   the SVG scales down enough that 10px viewbox text becomes <4 CSS px */
+@media (max-width: 639px) {
+  .svg-mobile-hide {
+    display: none;
+  }
+}
+
 /* light theme — inverts the ink/bone token gradients and swaps surface chrome */
 :root[data-theme="light"] {
   --color-ink-950: #ffffff;

@@ -692,7 +692,7 @@ function HeroTree() {
           );
         })}
 
-        <g>
+        <g className="svg-mobile-hide">
           <line
             x1="60"
             y1="305"
@@ -715,6 +715,7 @@ function HeroTree() {
         </g>
 
         <g
+          className="svg-mobile-hide"
           fontFamily="JetBrains Mono, monospace"
           fontSize="10"
           fill="#6B7079"
