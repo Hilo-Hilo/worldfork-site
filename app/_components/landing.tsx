@@ -303,6 +303,7 @@ function SetupPromptCard({
             : "bg-cool/10 text-cool hover:bg-cool hover:text-ink-950"
         }`}
         aria-label="Copy setup prompt to clipboard"
+        aria-live="polite"
       >
         {copied ? (
           <>
@@ -1766,19 +1767,19 @@ function Showcase() {
             </span>
           </p>
           <div className="mt-5 grid grid-cols-2 gap-2 font-mono text-[11px] text-bone-300">
-            <div className="border hairline px-3 py-2">
+            <div className="border hairline px-3 py-2 transition-colors hover:bg-white/[0.02] hover:border-cool/30">
               <div className="text-bone-500">tick duration</div>
               <div className="text-bone-100 mt-0.5">12 hours</div>
             </div>
-            <div className="border hairline px-3 py-2">
+            <div className="border hairline px-3 py-2 transition-colors hover:bg-white/[0.02] hover:border-cool/30">
               <div className="text-bone-500">max ticks</div>
               <div className="text-bone-100 mt-0.5">180</div>
             </div>
-            <div className="border hairline px-3 py-2">
+            <div className="border hairline px-3 py-2 transition-colors hover:bg-white/[0.02] hover:border-cool/30">
               <div className="text-bone-500">branch depth</div>
               <div className="text-bone-100 mt-0.5">5</div>
             </div>
-            <div className="border hairline px-3 py-2">
+            <div className="border hairline px-3 py-2 transition-colors hover:bg-white/[0.02] hover:border-cool/30">
               <div className="text-bone-500">active multiverses</div>
               <div className="text-bone-100 mt-0.5">24</div>
             </div>
@@ -1944,7 +1945,10 @@ function FAQ() {
     >
       <dl className="grid md:grid-cols-2 gap-x-10 gap-y-8 mt-4">
         {FAQ_ITEMS.map(([q, a]) => (
-          <div key={q} className="border-l border-cool/30 pl-5">
+          <div
+            key={q}
+            className="border-l border-cool/30 pl-5 transition-[border-color,padding] hover:border-cool/70 hover:pl-6"
+          >
             <dt className="text-[15px] font-medium text-bone-100 tracking-[-0.01em]">
               {q}
             </dt>
@@ -2107,7 +2111,7 @@ function MobileStickyCTA() {
   };
   return (
     <div
-      className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-cool/40 bg-ink-950/95 backdrop-blur transition-transform ${
+      className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-cool/40 bg-ink-950/95 backdrop-blur transition-transform shadow-[0_-12px_32px_-12px_rgba(74,158,255,0.18),0_-2px_8px_-2px_rgba(0,0,0,0.25)] ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
       role="region"
@@ -2116,6 +2120,8 @@ function MobileStickyCTA() {
       <div className="flex">
         <button
           onClick={copy}
+          aria-label="Copy WorldFork setup prompt to clipboard"
+          aria-live="polite"
           className={`flex-1 px-4 py-3.5 font-mono text-[12px] uppercase tracking-[0.14em] inline-flex items-center justify-center gap-2 ${
             copied ? "bg-cool text-ink-950" : "bg-cool/15 text-cool"
           }`}
