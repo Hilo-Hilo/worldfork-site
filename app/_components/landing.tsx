@@ -709,7 +709,16 @@ function Hero() {
           </div>
 
           <div className="md:col-span-7 lg:col-span-7">
-            <div className="relative border hairline bg-ink-950">
+            <div className="relative border hairline bg-ink-950 diagram-breathe">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-8 -z-10 aurora-breathe"
+                style={{
+                  background:
+                    "radial-gradient(60% 60% at 30% 50%, rgba(74,158,255,0.22), transparent 70%), radial-gradient(40% 50% at 80% 60%, rgba(124,184,255,0.12), transparent 75%)",
+                  filter: "blur(40px)",
+                }}
+              />
               <CornerMarks />
               <div className="flex items-center justify-between px-4 py-2.5 border-b hairline font-mono text-[10.5px] text-bone-400">
                 <div className="flex items-center gap-4">
@@ -963,7 +972,16 @@ function ConceptLineVsTree() {
               n_timelines = 128
             </span>
           </div>
-          <div className="aspect-[5/3] relative border border-cool/30 bp-grid-fine">
+          <div className="aspect-[5/3] relative border border-cool/30 bp-grid-fine diagram-breathe overflow-visible">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-6 -z-10 aurora-breathe"
+              style={{
+                background:
+                  "radial-gradient(50% 60% at 40% 50%, rgba(74,158,255,0.20), transparent 75%)",
+                filter: "blur(32px)",
+              }}
+            />
             <div className="absolute inset-0">
               <MiniTree tree={tree} t={t} />
             </div>
@@ -1052,7 +1070,16 @@ function HowItWorks() {
     >
       <div className="grid md:grid-cols-12 gap-6 md:gap-10">
         <div className="md:col-span-7">
-          <div className="relative border hairline bg-ink-950 p-6 md:p-8">
+          <div className="relative border hairline bg-ink-950 p-6 md:p-8 diagram-breathe">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-6 -z-10 aurora-breathe"
+              style={{
+                background:
+                  "radial-gradient(50% 60% at 50% 50%, rgba(74,158,255,0.18), transparent 75%)",
+                filter: "blur(36px)",
+              }}
+            />
             <CornerMarks />
             <Mono>fig.04 / pipeline</Mono>
 
