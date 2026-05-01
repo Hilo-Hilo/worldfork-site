@@ -145,6 +145,7 @@ body {
   --scrollbar-thumb-hover: #262b33;
   --selection-bg: rgba(74, 158, 255, 0.35);
   --selection-fg: #fff;
+
 }
 :root[data-theme="light"] {
   --grid-line: rgba(15, 23, 42, 0.04);
@@ -156,6 +157,70 @@ body {
   --scrollbar-thumb-hover: #a8a8a0;
   --selection-bg: rgba(37, 99, 235, 0.22);
   --selection-fg: #08090b;
+}
+
+/* SVG diagram colors — flip via attribute selectors so hex-coded fills
+   in the multiverse diagrams remain readable in light mode. */
+:root[data-theme="light"] svg [fill="#E8E9EC"],
+:root[data-theme="light"] svg [fill="#e8e9ec"] {
+  fill: #15171c;
+}
+:root[data-theme="light"] svg [stroke="#E8E9EC"],
+:root[data-theme="light"] svg [stroke="#e8e9ec"] {
+  stroke: #15171c;
+}
+:root[data-theme="light"] svg [fill="#9AA0AB"] {
+  fill: #525660;
+}
+:root[data-theme="light"] svg [fill="#6B7079"] {
+  fill: #525660;
+}
+:root[data-theme="light"] svg [fill="#0A0B0D"] {
+  fill: #fafaf7;
+}
+:root[data-theme="light"] svg [stroke="#0A0B0D"] {
+  stroke: #fafaf7;
+}
+:root[data-theme="light"] svg [fill="#363C46"] {
+  fill: #b8b8b2;
+}
+:root[data-theme="light"] svg [stroke="#363C46"] {
+  stroke: #989892;
+}
+:root[data-theme="light"] svg [fill="#4A9EFF"] {
+  fill: #2563eb;
+}
+:root[data-theme="light"] svg [stroke="#4A9EFF"] {
+  stroke: #2563eb;
+}
+:root[data-theme="light"] svg [stop-color="#4A9EFF"] {
+  stop-color: #2563eb;
+}
+:root[data-theme="light"] svg [fill="#7CB8FF"] {
+  fill: #3b82f6;
+}
+:root[data-theme="light"] svg [stroke="#7CB8FF"] {
+  stroke: #3b82f6;
+}
+:root[data-theme="light"] svg [stroke="rgba(255,255,255,0.025)"],
+:root[data-theme="light"] svg [stroke="rgba(255,255,255,0.04)"],
+:root[data-theme="light"] svg [stroke="rgba(255,255,255,0.06)"],
+:root[data-theme="light"] svg [stroke="rgba(255,255,255,0.08)"],
+:root[data-theme="light"] svg [stroke="rgba(255,255,255,0.18)"] {
+  stroke: rgba(15, 23, 42, 0.12);
+}
+:root[data-theme="light"] svg [stroke="rgba(232,233,236,0.18)"] {
+  stroke: rgba(15, 23, 42, 0.22);
+}
+:root[data-theme="light"] svg [stroke="rgba(232,233,236,0.35)"] {
+  stroke: rgba(15, 23, 42, 0.30);
+}
+:root[data-theme="light"] svg [stroke="rgba(124,184,255,0.55)"],
+:root[data-theme="light"] svg [stroke="rgba(124,184,255,0.6)"] {
+  stroke: rgba(37, 99, 235, 0.55);
+}
+:root[data-theme="light"] svg [stroke="rgba(74,158,255,0.4)"] {
+  stroke: rgba(37, 99, 235, 0.45);
 }
 
 .bp-grid {
@@ -320,8 +385,16 @@ body {
   .aurora-breathe,
   .node-breathe,
   .pulse-ring,
-  .blink {
+  .blink,
+  .path-draw,
+  .node-pop {
     animation: none !important;
+  }
+  .path-draw {
+    stroke-dashoffset: 0 !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
 

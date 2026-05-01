@@ -380,8 +380,11 @@ function Nav() {
           <a href="#cli" className="hover:text-bone-100 transition-colors">
             CLI
           </a>
-          <a href="#stack" className="hover:text-bone-100 transition-colors">
-            Stack
+          <a href="#showcase" className="hover:text-bone-100 transition-colors">
+            Example
+          </a>
+          <a href="#faq" className="hover:text-bone-100 transition-colors">
+            FAQ
           </a>
           <a
             href={DOCS_URL}
@@ -544,7 +547,19 @@ function HeroTree() {
         ))}
       </div>
 
-      <svg viewBox="0 0 880 520" className="w-full h-full overflow-visible">
+      <svg
+        viewBox="0 0 880 520"
+        className="w-full h-full overflow-visible"
+        role="img"
+        aria-labelledby="hero-tree-title hero-tree-desc"
+      >
+        <title id="hero-tree-title">WorldFork multiverse tree</title>
+        <desc id="hero-tree-desc">
+          Diagram of a Big Bang scenario branching into multiple timelines
+          across six ticks. Active timelines are blue, audited timelines are
+          marked with a square outline, and pruned timelines are dashed and
+          muted.
+        </desc>
         <defs>
           <pattern
             id="bp"
@@ -871,7 +886,15 @@ function MiniTree({ tree, t }: { tree: Tree; t: number }) {
     } ${e.to.y}, ${e.to.x} ${e.to.y}`;
   };
   return (
-    <svg viewBox="0 0 500 300" className="w-full h-full">
+    <svg
+      viewBox="0 0 500 300"
+      className="w-full h-full"
+      role="img"
+      aria-labelledby="mini-tree-title"
+    >
+      <title id="mini-tree-title">
+        Multiverse tree — branching timelines across nine ticks
+      </title>
       {Array.from({ length: 9 }).map((_, i) => (
         <line
           key={i}
@@ -972,7 +995,13 @@ function ConceptLineVsTree() {
             <svg
               viewBox="0 0 500 300"
               className="absolute inset-0 w-full h-full"
+              role="img"
+              aria-labelledby="mono-title"
             >
+              <title id="mono-title">
+                Conventional simulation — one trajectory across nine ticks,
+                no branching
+              </title>
               <line
                 x1="40"
                 y1="150"
@@ -1209,7 +1238,16 @@ function HowItWorks() {
             </div>
 
             <div className="mt-8 overflow-hidden">
-              <svg viewBox="0 0 700 200" className="w-full h-auto">
+              <svg
+                viewBox="0 0 700 200"
+                className="w-full h-auto"
+                role="img"
+                aria-labelledby="pipeline-title"
+              >
+                <title id="pipeline-title">
+                  WorldFork runtime pipeline: Big Bang, multiverse, tick,
+                  audit, report — with prune-and-resume feedback
+                </title>
                 <line
                   x1="40"
                   y1="100"
@@ -1702,6 +1740,257 @@ function Quickstart() {
   );
 }
 
+/* ─────────── 8. SHOWCASE — real example scenario ─────────── */
+
+function Showcase() {
+  return (
+    <Section
+      id="showcase"
+      label="§07 — example"
+      title="A real scenario the project ships with."
+    >
+      <div className="grid md:grid-cols-12 gap-6 md:gap-10 mt-2">
+        <div className="md:col-span-5">
+          <Mono>examples/test-big-bang.md</Mono>
+          <h3 className="mt-3 text-2xl md:text-[28px] font-medium tracking-[-0.02em] text-bone-100 text-balance">
+            The Atlas Resilience Crisis
+          </h3>
+          <p className="mt-4 text-bone-300 text-[14px] leading-relaxed text-pretty">
+            A 40-million-person coastal megaregion enters a 180-day emergency
+            after a heat wave, water-pressure failures, rolling blackouts,
+            supply bottlenecks, and a climate-migration surge collide with
+            fragile public trust and a newly deployed AI-assisted civic
+            coordination system.
+          </p>
+          <p className="mt-3 text-bone-400 text-[13px] leading-relaxed">
+            The simulation question:{" "}
+            <span className="text-bone-200">
+              which governance choices preserve legitimacy, reduce harm, and
+              prevent social fragmentation when scarcity, institutional
+              overload, misinformation, and emergency technology all interact
+              at once?
+            </span>
+          </p>
+          <div className="mt-5 grid grid-cols-2 gap-2 font-mono text-[11px] text-bone-300">
+            <div className="border hairline px-3 py-2">
+              <div className="text-bone-500">tick duration</div>
+              <div className="text-bone-100 mt-0.5">12 hours</div>
+            </div>
+            <div className="border hairline px-3 py-2">
+              <div className="text-bone-500">max ticks</div>
+              <div className="text-bone-100 mt-0.5">180</div>
+            </div>
+            <div className="border hairline px-3 py-2">
+              <div className="text-bone-500">branch depth</div>
+              <div className="text-bone-100 mt-0.5">5</div>
+            </div>
+            <div className="border hairline px-3 py-2">
+              <div className="text-bone-500">active multiverses</div>
+              <div className="text-bone-100 mt-0.5">24</div>
+            </div>
+          </div>
+          <div className="mt-6 flex items-center gap-4 font-mono text-[11.5px]">
+            <a
+              href={`${GITHUB_URL}/blob/main/examples/test-big-bang.md`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-cool hover:text-cool-soft"
+            >
+              read the full scenario →
+            </a>
+            <a
+              href={`${GITHUB_URL}/tree/main/examples`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-bone-400 hover:text-bone-200"
+            >
+              all examples ↗
+            </a>
+          </div>
+        </div>
+
+        <div className="md:col-span-7">
+          <div className="border hairline bg-ink-850 p-5 md:p-7 relative">
+            <CornerMarks />
+            <div className="flex items-center justify-between mb-4">
+              <Mono>plausible terminal multiverses</Mono>
+              <span className="font-mono text-[10.5px] text-bone-400">
+                n_outcomes ≈ 8
+              </span>
+            </div>
+            <ul className="grid sm:grid-cols-2 gap-px bg-bone-100/[0.06] font-mono text-[12px]">
+              {[
+                ["A", "Cooperative resilience success"],
+                ["B", "Opaque emergency regime"],
+                ["C", "Misinformation spiral"],
+                ["D", "Civic-tech reform path"],
+                ["E", "Regional fragmentation"],
+                ["F", "Mutual-aid federation"],
+                ["G", "Court-driven legitimacy reset"],
+                ["H", "Labor & housing conflict"],
+              ].map(([k, v]) => (
+                <li
+                  key={k}
+                  className="bg-ink-850 px-3 py-2.5 flex items-baseline gap-3"
+                >
+                  <span className="text-cool">{k}</span>
+                  <span className="text-bone-200">{v}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-bone-400 text-[12.5px] leading-relaxed font-mono">
+              <span className="text-bone-500">// </span>
+              same Day 0. eight plausible terminal states.
+              <br />
+              <span className="text-bone-500">// </span>
+              the report compares them with full lineage.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─────────── 9. FAQ — common questions, side-by-side definitions ─────────── */
+
+const FAQ_ITEMS: Array<[string, ReactNode]> = [
+  [
+    "Is WorldFork a SaaS product?",
+    <>
+      No. WorldFork is open-source backend infrastructure that you self-host.
+      There is no hosted service, no login, and no data is collected by this
+      site.
+    </>,
+  ],
+  [
+    "What is a Big Bang?",
+    <>
+      The root scenario document that seeds a run. It defines the initial
+      world state, the primary simulation question, and the conditions agents
+      tick forward from. See{" "}
+      <a
+        href={`${GITHUB_URL}/blob/main/examples/test-big-bang.md`}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="text-cool hover:text-cool-soft"
+      >
+        the Atlas example
+      </a>
+      .
+    </>,
+  ],
+  [
+    "Does it require a specific LLM?",
+    <>
+      No. WorldFork ships with OpenRouter, so any supported model works. You
+      provide an OpenRouter key during setup. The example scenario recommends{" "}
+      <span className="font-mono text-bone-200">
+        google/gemini-3.1-flash-lite-preview
+      </span>{" "}
+      for cheap smoke runs.
+    </>,
+  ],
+  [
+    "Can I run it without Docker?",
+    <>
+      Docker Compose is the supported path. You need Python 3.11+, Docker,
+      and an OpenRouter key. Manual native installs are possible but not the
+      documented happy path.
+    </>,
+  ],
+  [
+    "What license?",
+    <>
+      MIT-spirited. See the{" "}
+      <a
+        href={`${GITHUB_URL}/blob/main/LICENSE`}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="text-cool hover:text-cool-soft"
+      >
+        LICENSE
+      </a>{" "}
+      file in the GitHub repository for the full text.
+    </>,
+  ],
+  [
+    "How do I install it with a coding agent?",
+    <>
+      Paste the prompt at the top of this page into Claude Code, Cursor, or
+      any coding agent. The official{" "}
+      <span className="font-mono text-bone-200">worldfork-setup</span> skill
+      handles repo clone, Docker bring-up, and first-run validation.
+    </>,
+  ],
+  [
+    "How does branching work?",
+    <>
+      The runtime evaluates each tick for branch-worthy decision points,
+      scores them, and forks above a configurable threshold. Branches inherit
+      tick history, so each child timeline diverges from a known shared past.
+    </>,
+  ],
+  [
+    "What does the audit produce?",
+    <>
+      Persisted runtime checkpoints, every LLM call, jobs and logs, manual
+      interventions, and structured per-multiverse + final Big Bang reports.
+      Tied back to durable state so any run is reproducible and inspectable.
+    </>,
+  ],
+];
+
+function FAQ() {
+  return (
+    <Section
+      id="faq"
+      label="§08 — faq"
+      title="Common questions, plainly answered."
+    >
+      <dl className="grid md:grid-cols-2 gap-x-10 gap-y-8 mt-4">
+        {FAQ_ITEMS.map(([q, a]) => (
+          <div key={q} className="border-l border-cool/30 pl-5">
+            <dt className="text-[15px] font-medium text-bone-100 tracking-[-0.01em]">
+              {q}
+            </dt>
+            <dd className="mt-2 text-[13.5px] text-bone-300 leading-relaxed text-pretty">
+              {a}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <div className="mt-10 pt-6 border-t hairline flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-[12px] text-bone-400">
+        <span className="text-bone-500">more questions →</span>
+        <a
+          href={DOCS_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="hover:text-bone-100"
+        >
+          Read the Docs
+        </a>
+        <a
+          href={DEEPWIKI_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="hover:text-bone-100"
+        >
+          DeepWiki
+        </a>
+        <a
+          href={`${GITHUB_URL}/issues`}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="hover:text-bone-100"
+        >
+          file an issue
+        </a>
+      </div>
+    </Section>
+  );
+}
+
 /* ─────────── 10. FOOTER ─────────── */
 
 function Footer() {
@@ -1730,6 +2019,8 @@ function Footer() {
                   ["Concept", "#concept"],
                   ["Runtime", "#runtime"],
                   ["CLI", "#cli"],
+                  ["Example", "#showcase"],
+                  ["FAQ", "#faq"],
                   ["Quickstart", "#quickstart"],
                 ],
               ],
@@ -1853,18 +2144,22 @@ function MobileStickyCTA() {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-ink-900 text-bone-100 pb-16 md:pb-0 relative">
-      <a href="#top" className="skip-link">skip to content</a>
+    <main
+      id="main"
+      className="min-h-screen bg-ink-900 text-bone-100 pb-16 md:pb-0 relative"
+    >
       <span className="grain" aria-hidden="true" />
       <Nav />
       <Hero />
       <ConceptLineVsTree />
       <HowItWorks />
       <CLISection />
+      <Showcase />
       <StackStrip />
       <Quickstart />
+      <FAQ />
       <Footer />
       <MobileStickyCTA />
-    </div>
+    </main>
   );
 }
