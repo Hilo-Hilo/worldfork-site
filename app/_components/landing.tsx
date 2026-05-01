@@ -975,12 +975,6 @@ function MiniTree({ tree }: { tree: Tree }) {
 }
 
 function ConceptLineVsTree() {
-  const [t, setT] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setT((x) => x + 1), 240);
-    return () => clearInterval(id);
-  }, []);
-
   const tree = useMemo(() => buildTree(3), []);
 
   return (
@@ -1038,10 +1032,11 @@ function ConceptLineVsTree() {
                 </g>
               ))}
               <circle
-                cx={40 + ((t / 2) % 9) * 52.5}
+                cx="40"
                 cy="150"
                 r="3"
                 fill="#E8E9EC"
+                className="conv-dot"
               />
               <text
                 x="40"

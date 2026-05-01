@@ -411,6 +411,27 @@ body {
   }
 }
 
+/* CSS-driven step animation for the conventional-monoverse dot —
+   replaces a 240ms-interval React setState that re-rendered the whole tree. */
+@keyframes conv-step {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(420px);
+  }
+}
+.conv-dot {
+  animation: conv-step 4.32s steps(9) infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@media (prefers-reduced-motion: reduce) {
+  .conv-dot {
+    animation: none !important;
+  }
+}
+
 .scan {
   background-image: repeating-linear-gradient(
     to bottom,
