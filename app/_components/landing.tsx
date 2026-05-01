@@ -135,7 +135,12 @@ function Btn({
 
 function Cross({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 12 12" className={`w-3 h-3 ${className}`}>
+    <svg
+      viewBox="0 0 12 12"
+      className={`w-3 h-3 ${className}`}
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="M6 0v12 M0 6h12" stroke="currentColor" strokeWidth="0.8" />
     </svg>
   );
@@ -155,7 +160,12 @@ function CornerMarks() {
 function Wordmark() {
   return (
     <div className="flex items-baseline gap-1.5">
-      <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-bone-100">
+      <svg
+        viewBox="0 0 24 24"
+        className="w-[18px] h-[18px] text-bone-100"
+        aria-hidden="true"
+        focusable="false"
+      >
         <path
           d="M12 22 V14 M12 14 L6 8 M12 14 L18 8 M6 8 V3 M18 8 V3 M12 14 H12"
           stroke="currentColor"
@@ -402,7 +412,7 @@ function Nav() {
             className="hover:text-bone-100 transition-colors inline-flex items-center gap-1.5"
           >
             GitHub
-            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
+            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5" aria-hidden="true" focusable="false">
               <path
                 d="M2 8l6-6M3 2h5v5"
                 stroke="currentColor"
@@ -423,7 +433,7 @@ function Nav() {
             <span className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-bone-200">
               HackTech &apos;26 · 1st
             </span>
-            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-bone-400">
+            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-bone-400" aria-hidden="true" focusable="false">
               <path
                 d="M2 8l6-6M3 2h5v5"
                 stroke="currentColor"
@@ -1174,7 +1184,7 @@ function HowItWorks() {
   return (
     <Section
       id="runtime"
-      label="§04 — runtime"
+      label="§03 — runtime"
       title="Big Bang → Multiverse → Tick → Audit → Report."
     >
       <div className="grid md:grid-cols-12 gap-6 md:gap-10">
@@ -1445,7 +1455,7 @@ function CLISection() {
   return (
     <Section
       id="cli"
-      label="§05 — interface"
+      label="§04 — interface"
       title={<>Designed for agents. The CLI ships today; the web UI is next.</>}
     >
       <div className="grid md:grid-cols-12 gap-8 md:gap-10">
@@ -1586,7 +1596,7 @@ function StackStrip() {
   return (
     <Section
       id="stack"
-      label="§07 — built on"
+      label="§06 — built on"
       title="Standing on tools that have already proved themselves at scale."
     >
       {/* editorial horizontal credits strip — replaces equal-card grid */}
@@ -1640,7 +1650,7 @@ function Quickstart() {
   return (
     <Section
       id="quickstart"
-      label="§08 — quickstart"
+      label="§07 — quickstart"
       title="Paste one prompt into your agent. Done."
     >
       {/* AGENT PATH — recommended */}
@@ -1741,7 +1751,7 @@ function Showcase() {
   return (
     <Section
       id="showcase"
-      label="§07 — example"
+      label="§05 — example"
       title="A real scenario the project ships with."
     >
       <div className="grid md:grid-cols-12 gap-6 md:gap-10 mt-2">
@@ -2066,8 +2076,11 @@ function Footer() {
         </div>
         <div className="mt-12 pt-6 border-t hairline flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-mono text-[11px] text-bone-500">
           <div>
-            © {new Date().getFullYear()} WorldFork · open source · HackTech
-            &apos;26
+            ©{" "}
+            <time dateTime={String(new Date().getFullYear())}>
+              {new Date().getFullYear()}
+            </time>{" "}
+            WorldFork · open source · HackTech &apos;26
           </div>
           <div className="flex items-center gap-5">
             <a
