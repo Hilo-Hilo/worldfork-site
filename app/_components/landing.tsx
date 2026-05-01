@@ -1222,6 +1222,7 @@ const STAGES = [
   {
     key: "bigbang",
     label: "Big Bang",
+    short: "Big Bang",
     sub: "§04.a · scenario",
     body: "Define initial conditions: actors, world rules, decision schemas, branching constraints. WorldFork compiles this into the runnable scenario graph.",
     detail: [
@@ -1234,6 +1235,7 @@ const STAGES = [
   {
     key: "multiverse",
     label: "Multiverse",
+    short: "Forks",
     sub: "§04.b · branching",
     body: "At every decision point, the runtime forks. New timelines inherit state, then diverge. Branching is bounded by the configured policy (top-k, sampled, exhaustive).",
     detail: ["policy = top_k", "k = 3", "depth_limit = 12", "parallelism = 64"],
@@ -1241,6 +1243,7 @@ const STAGES = [
   {
     key: "tick",
     label: "Tick runtime",
+    short: "Tick",
     sub: "§04.c · execution",
     body: "Live timelines tick in parallel. Every state mutation is checkpointed so any run can be paused, resumed, inspected, or replayed safely.",
     detail: [
@@ -1253,6 +1256,7 @@ const STAGES = [
   {
     key: "audit",
     label: "God-agent audit",
+    short: "Audit",
     sub: "§04.d · oversight",
     body: "A privileged auditor agent reviews each branch against the constraint set. Violators are pruned and logged. Survivors continue ticking.",
     detail: [
@@ -1265,6 +1269,7 @@ const STAGES = [
   {
     key: "report",
     label: "Reports",
+    short: "Report",
     sub: "§04.e · output",
     body: "Each run emits a structured report — branch tree, per-timeline transcripts, audit log, and statistical rollups. Render as Markdown or PDF.",
     detail: [
@@ -1286,7 +1291,7 @@ function HowItWorks() {
     >
       <div className="grid md:grid-cols-12 gap-6 md:gap-10">
         <div className="md:col-span-7">
-          <div className="relative border hairline bg-ink-950 p-6 md:p-8 diagram-breathe">
+          <div className="relative border hairline bg-ink-950 p-4 md:p-8 diagram-breathe overflow-hidden">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute -inset-6 -z-10 aurora-breathe"
@@ -1307,7 +1312,7 @@ function HowItWorks() {
                     key={s.key}
                     onClick={() => setActive(i)}
                     onMouseEnter={() => setActive(i)}
-                    className={`group relative text-left px-2 py-3 border-r last:border-r-0 hairline ${
+                    className={`group relative text-left px-1.5 md:px-2 py-3 border-r last:border-r-0 hairline min-w-0 ${
                       isActive
                         ? "bg-cool/[0.06]"
                         : "hover:bg-white/[0.02]"
@@ -1321,13 +1326,14 @@ function HowItWorks() {
                       {String(i + 1).padStart(2, "0")}
                     </div>
                     <div
-                      className={`mt-2 text-[14px] md:text-[15px] font-medium leading-tight ${
+                      className={`mt-2 text-[12.5px] md:text-[15px] font-medium leading-tight break-words ${
                         isActive
                           ? "text-bone-100"
                           : "text-bone-200 group-hover:text-bone-100"
                       }`}
                     >
-                      {s.label}
+                      <span className="md:hidden">{s.short}</span>
+                      <span className="hidden md:inline">{s.label}</span>
                     </div>
                     <div
                       className={`absolute top-0 left-0 right-0 h-[2px] ${
@@ -1407,7 +1413,7 @@ function HowItWorks() {
                           fill={isActive ? "#E8E9EC" : "#6B7079"}
                           letterSpacing="0.5"
                         >
-                          {s.label.toUpperCase()}
+                          {s.short.toUpperCase()}
                         </text>
                       </g>
                     </g>
