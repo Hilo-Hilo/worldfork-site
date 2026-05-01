@@ -43,3 +43,9 @@ next-env.d.ts
 # playwright/test artifacts
 .playwright-mcp/
 hero.png
+
+# stale astro artifacts (project migrated to Next.js)
+.astro/
+
+# local agent state
+.claude/
