@@ -444,7 +444,7 @@ body {
   }
 }
 .conv-dot {
-  animation: conv-step 4.32s steps(9) infinite;
+  animation: conv-step 4s steps(8) infinite;
   transform-origin: center;
   transform-box: fill-box;
 }
