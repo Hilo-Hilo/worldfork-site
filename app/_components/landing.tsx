@@ -854,21 +854,21 @@ function useTypewriter(phrases: string[]) {
     }
     let t: ReturnType<typeof setTimeout>;
     if (phase === "hold") {
-      t = setTimeout(() => setPhase("deleting"), 4200);
+      t = setTimeout(() => setPhase("deleting"), 5000);
     } else if (phase === "deleting") {
       if (text.length === 0) {
         const next = (i + 1) % phrases.length;
         setI(next);
-        t = setTimeout(() => setPhase("typing"), 600);
+        t = setTimeout(() => setPhase("typing"), 120);
       } else {
-        t = setTimeout(() => setText(text.slice(0, -1)), 45);
+        t = setTimeout(() => setText(text.slice(0, -1)), 22);
       }
     } else {
       const target = phrases[i];
       if (text === target) {
         setPhase("hold");
       } else {
-        t = setTimeout(() => setText(target.slice(0, text.length + 1)), 85);
+        t = setTimeout(() => setText(target.slice(0, text.length + 1)), 45);
       }
     }
     return () => clearTimeout(t);
