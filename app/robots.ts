@@ -14,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Applebot-Extended", allow: "/" },
       { userAgent: "Bytespider", allow: "/" },
     ],
-    sitemap: "https://worldfork-site.vercel.app/sitemap.xml",
-    host: "https://worldfork-site.vercel.app",
+    sitemap: "https://worldfork.tech/sitemap.xml",
+    host: "https://worldfork.tech",
   };
 }

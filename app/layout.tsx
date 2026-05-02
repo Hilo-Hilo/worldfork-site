@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const SITE_URL = "https://worldfork-site.vercel.app";
+const SITE_URL = "https://worldfork.tech";
 const TITLE = "WorldFork — Monte Carlo tree search for reality.";
 const DESCRIPTION =
   "Open-source social simulation infrastructure that runs Monte Carlo tree search on reality. Define a Big Bang scenario, let agents expand promising decision points, simulate forward, and let a god-agent back up which paths survive. 1st place at HackTech '26.";
