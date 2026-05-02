@@ -857,9 +857,10 @@ function useTypewriter(phrases: string[]) {
       t = setTimeout(() => setPhase("deleting"), 5000);
     } else if (phase === "deleting") {
       if (text.length === 0) {
-        const next = (i + 1) % phrases.length;
-        setI(next);
-        t = setTimeout(() => setPhase("typing"), 120);
+        t = setTimeout(() => {
+          setI((prev) => (prev + 1) % phrases.length);
+          setPhase("typing");
+        }, 120);
       } else {
         t = setTimeout(() => setText(text.slice(0, -1)), 22);
       }
