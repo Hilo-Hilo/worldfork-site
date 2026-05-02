@@ -931,7 +931,7 @@ function Hero() {
               })()}
             </h1>
             <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-[-0.015em] text-balance">
-              MCTS for reality. One scenario, a searched tree of timelines, audited.
+              Monte Carlo Tree Search for reality. One scenario, a searched tree of timelines, audited.
             </p>
             <p className="mt-4 text-[14.5px] md:text-[15px] leading-relaxed text-bone-300 max-w-md text-pretty">
               AlphaGo searched a tree of moves to find the strongest one. WorldFork
