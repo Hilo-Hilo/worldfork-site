@@ -2188,8 +2188,8 @@ function Footer() {
             <time dateTime={String(new Date().getFullYear())}>
               {new Date().getFullYear()}
             </time>{" "}
-            WorldFork contributors · Apache License 2.0 · this site sets no
-            cookies and runs no analytics
+            WorldFork contributors · Apache License 2.0 · cookieless analytics
+            via Vercel
           </div>
           <div className="flex items-center gap-5">
             <a
