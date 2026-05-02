@@ -833,7 +833,52 @@ function HeroTree() {
 
 /* ─────────── 3. HERO BLOCK ─────────── */
 
+const HERO_PHRASES = [
+  "Fork the world.",
+  "Search the future.",
+  "Tree-search reality.",
+  "Sample the possible.",
+  "Replay tomorrow.",
+  "Simulate everything.",
+];
+
+function useTypewriter(phrases: string[]) {
+  const [i, setI] = useState(0);
+  const [text, setText] = useState(phrases[0]);
+  const [phase, setPhase] = useState<"hold" | "deleting" | "typing">("hold");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+    }
+    let t: ReturnType<typeof setTimeout>;
+    if (phase === "hold") {
+      t = setTimeout(() => setPhase("deleting"), 1800);
+    } else if (phase === "deleting") {
+      if (text.length === 0) {
+        const next = (i + 1) % phrases.length;
+        setI(next);
+        setPhase("typing");
+      } else {
+        t = setTimeout(() => setText(text.slice(0, -1)), 32);
+      }
+    } else {
+      const target = phrases[i];
+      if (text === target) {
+        setPhase("hold");
+      } else {
+        t = setTimeout(() => setText(target.slice(0, text.length + 1)), 65);
+      }
+    }
+    return () => clearTimeout(t);
+  }, [phase, text, i, phrases]);
+
+  return text;
+}
+
 function Hero() {
+  const headline = useTypewriter(HERO_PHRASES);
   return (
     <section id="top" className="relative">
       <div className="absolute inset-0 bp-grid opacity-60 pointer-events-none" />
@@ -855,13 +900,15 @@ function Hero() {
         <div className="grid md:grid-cols-12 gap-10 md:gap-8">
           <div className="md:col-span-5 lg:col-span-5">
             <Mono>§01 — Monte Carlo tree search for reality</Mono>
-            <h1 className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 text-balance">
-              Search the
-              <br />
-              <span className="relative inline-block">
-                future.
-                <span className="absolute -right-3 top-1 w-2 h-[78%] bg-cool blink"></span>
-              </span>
+            <h1
+              className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 text-balance min-h-[1.84em]"
+              aria-label="Fork the world. Search the future. Tree-search reality."
+            >
+              <span aria-hidden="true">{headline}</span>
+              <span
+                aria-hidden="true"
+                className="inline-block align-baseline w-[0.5ch] h-[0.78em] -mb-[0.06em] ml-[0.08em] bg-cool blink"
+              />
             </h1>
             <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-[-0.015em] text-balance">
               MCTS for reality. One scenario, a searched tree of timelines, audited.
