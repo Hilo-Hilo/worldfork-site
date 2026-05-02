@@ -854,22 +854,23 @@ function Hero() {
 
         <div className="grid md:grid-cols-12 gap-10 md:gap-8">
           <div className="md:col-span-5 lg:col-span-5">
-            <Mono>§01 — agent-operated branching social simulation</Mono>
+            <Mono>§01 — Monte Carlo tree search for reality</Mono>
             <h1 className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 text-balance">
-              Fork the
+              Search the
               <br />
               <span className="relative inline-block">
-                world.
+                future.
                 <span className="absolute -right-3 top-1 w-2 h-[78%] bg-cool blink"></span>
               </span>
             </h1>
             <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-[-0.015em] text-balance">
-              One scenario. Many timelines. Audited.
+              MCTS for reality. One scenario, a searched tree of timelines, audited.
             </p>
             <p className="mt-4 text-[14.5px] md:text-[15px] leading-relaxed text-bone-300 max-w-md text-pretty">
-              Backend infrastructure for branching social simulations — agents
-              tick it forward, fork on consequential decisions, audit each
-              timeline, read the structured report.
+              AlphaGo searched a tree of moves to find the strongest one. WorldFork
+              applies the same idea to social scenarios — agents expand promising
+              decision points, simulate forward, and a god-agent backs up which
+              paths survive.
             </p>
 
             {/* social proof strip */}
@@ -969,7 +970,7 @@ function Hero() {
             <div className="mt-5 grid grid-cols-3 gap-4">
               {[
                 ["1st", "HackTech '26"],
-                ["audited", "every tick · every fork"],
+                ["audited", "every tick · every rollout"],
                 ["Apache 2.0", "open source · self-host"],
               ].map(([n, l]) => (
                 <div key={l} className="border-l hairline-strong pl-3">
@@ -1082,7 +1083,7 @@ function ConceptLineVsTree() {
     <Section
       id="concept"
       label="§02 — concept"
-      title="One timeline tells you what happened. A tree tells you what could have."
+      title="Most simulators sample one trajectory. WorldFork searches the tree."
     >
       <div className="grid md:grid-cols-2 gap-px bg-bone-100/10 mt-4">
         <div className="bg-ink-900 p-6 md:p-10">
@@ -1204,7 +1205,7 @@ function ConceptLineVsTree() {
           </div>
           <div className="mt-5 font-mono text-[12px] text-bone-200 leading-relaxed">
             <span className="text-cool">// </span>
-            keep every fork. tick all branches in parallel.
+            select. expand. simulate. back up. (MCTS, on reality.)
             <br />
             <span className="text-cool">// </span>
             the tree <span className="text-bone-100">is</span> the answer —
@@ -1223,8 +1224,8 @@ const STAGES = [
     key: "bigbang",
     label: "Big Bang",
     short: "Big Bang",
-    sub: "§04.a · scenario",
-    body: "Define initial conditions: actors, world rules, decision schemas, branching constraints. WorldFork compiles this into the runnable scenario graph.",
+    sub: "§04.a · root state",
+    body: "Define initial conditions: actors, world rules, decision schemas, expansion constraints. WorldFork compiles this into the runnable scenario graph — the root of the search tree.",
     detail: [
       "actors[]",
       "world.rules",
@@ -1236,16 +1237,16 @@ const STAGES = [
     key: "multiverse",
     label: "Multiverse",
     short: "Forks",
-    sub: "§04.b · branching",
-    body: "At every decision point, the runtime forks. New timelines inherit state, then diverge. Branching is bounded by the configured policy (top-k, sampled, exhaustive).",
+    sub: "§04.b · expansion",
+    body: "At consequential decision points, the runtime expands the node. New child timelines inherit state and diverge. Expansion is bounded by the configured policy (top-k, sampled, exhaustive).",
     detail: ["policy = top_k", "k = 3", "depth_limit = 12", "parallelism = 64"],
   },
   {
     key: "tick",
     label: "Tick runtime",
     short: "Tick",
-    sub: "§04.c · execution",
-    body: "Live timelines tick in parallel. Every state mutation is checkpointed so any run can be paused, resumed, inspected, or replayed safely.",
+    sub: "§04.c · simulation",
+    body: "Live timelines simulate forward in parallel — one rollout per multiverse, one tick at a time. Every state mutation is checkpointed so any run can be paused, resumed, inspected, or replayed safely.",
     detail: [
       "ticks.parallel",
       "state.checkpointed",
@@ -1257,8 +1258,8 @@ const STAGES = [
     key: "audit",
     label: "God-agent audit",
     short: "Audit",
-    sub: "§04.d · oversight",
-    body: "A privileged auditor agent reviews each branch against the constraint set. Violators are pruned and logged. Survivors continue ticking.",
+    sub: "§04.d · back-up",
+    body: "A privileged god-agent reviews each child against the constraint set and backs the verdict up the tree. Violators are pruned and logged. Survivors continue ticking.",
     detail: [
       "constraint.satisfy",
       "prune.if(violation)",
@@ -1270,8 +1271,8 @@ const STAGES = [
     key: "report",
     label: "Reports",
     short: "Report",
-    sub: "§04.e · output",
-    body: "Each run emits a structured report — branch tree, per-timeline transcripts, audit log, and statistical rollups. Render as Markdown or PDF.",
+    sub: "§04.e · search result",
+    body: "Each run emits a structured report — the searched tree, per-timeline transcripts, audit log, and statistical rollups across rollouts. Render as Markdown or PDF.",
     detail: [
       "branch.tree",
       "transcripts",
@@ -1954,11 +1955,25 @@ const FAQ_ITEMS: Array<[string, ReactNode]> = [
     </>,
   ],
   [
-    "How does branching work?",
+    "Why frame this as Monte Carlo tree search?",
     <>
-      The runtime evaluates each tick for branch-worthy decision points,
-      scores them, and forks above a configurable threshold. Branches inherit
-      tick history, so each child timeline diverges from a known shared past.
+      The four-phase MCTS loop maps cleanly onto what the runtime already does:
+      <span className="text-bone-100"> selection</span> picks which multiverse
+      to advance,<span className="text-bone-100"> expansion</span> creates
+      children at consequential decision points,
+      <span className="text-bone-100"> simulation</span> ticks each child
+      forward, and the god-agent <span className="text-bone-100">backs up</span>{" "}
+      verdicts so the surviving tree reflects what actually held up under
+      audit.
+    </>,
+  ],
+  [
+    "How does expansion (branching) work?",
+    <>
+      The runtime evaluates each tick for consequential decision points,
+      scores them, and expands above a configurable threshold. Children
+      inherit tick history, so each child timeline diverges from a known
+      shared past.
     </>,
   ],
   [
@@ -2034,8 +2049,9 @@ function Footer() {
           <div className="md:col-span-5">
             <Wordmark />
             <p className="mt-4 text-bone-400 text-[13.5px] leading-relaxed max-w-sm">
-              Agent-operated branching social simulation. Built by a small team
-              of researchers and infrastructure engineers.
+              Monte Carlo tree search for reality — agent-operated social
+              simulation. Built by a small team of researchers and
+              infrastructure engineers.
             </p>
             <div className="mt-5 flex items-center gap-2 px-2.5 py-1 border hairline-strong w-max">
               <span className="w-1.5 h-1.5 bg-cool"></span>

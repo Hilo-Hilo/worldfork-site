@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const alt =
-  "WorldFork — Fork the world. Branching social simulation infrastructure for agents.";
+  "WorldFork — Monte Carlo tree search for reality. Open-source social simulation infrastructure.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -62,7 +62,7 @@ export default function OGImage() {
             display: "flex",
           }}
         >
-          worldfork — open source · hacktech '26
+          worldfork — mcts for reality · hacktech '26
         </div>
 
         {/* headline */}
@@ -77,7 +77,7 @@ export default function OGImage() {
             display: "flex",
           }}
         >
-          Fork the world.
+          Search the future.
         </div>
 
         {/* subhead */}
@@ -91,7 +91,7 @@ export default function OGImage() {
             display: "flex",
           }}
         >
-          One scenario. Many timelines. Audited.
+          MCTS for reality. One scenario, a searched tree of timelines, audited.
         </div>
 
         {/* spacer */}

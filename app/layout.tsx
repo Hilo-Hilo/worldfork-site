@@ -15,9 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const SITE_URL = "https://worldfork-site.vercel.app";
-const TITLE = "WorldFork — Fork the world.";
+const TITLE = "WorldFork — Monte Carlo tree search for reality.";
 const DESCRIPTION =
-  "Open-source branching social simulation infrastructure. Spin up a Big Bang scenario, let agents tick it forward, branch on consequential decisions, audit every timeline, and read the structured report. 1st place at HackTech '26.";
+  "Open-source social simulation infrastructure that runs Monte Carlo tree search on reality. Define a Big Bang scenario, let agents expand promising decision points, simulate forward, and let a god-agent back up which paths survive. 1st place at HackTech '26.";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -41,6 +41,9 @@ export const metadata: Metadata = {
   generator: "Next.js",
   keywords: [
     "WorldFork",
+    "Monte Carlo tree search",
+    "MCTS",
+    "MCTS for reality",
     "branching simulation",
     "social simulation",
     "multiverse simulation",
@@ -71,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description:
-      "Open-source branching social simulation infrastructure. One scenario, many auditable timelines. HackTech '26 1st place.",
+      "Open-source Monte Carlo tree search for social reality. One scenario, a searched tree of auditable timelines. HackTech '26 1st place.",
     creator: "@worldfork",
   },
   robots: {
