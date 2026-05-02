@@ -902,14 +902,33 @@ function Hero() {
           <div className="md:col-span-5 lg:col-span-5">
             <Mono>§01 — Monte Carlo tree search for reality</Mono>
             <h1
-              className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 whitespace-pre-line min-h-[1.84em]"
+              className="mt-6 text-[44px] md:text-[60px] lg:text-[76px] leading-[0.95] font-medium tracking-[-0.035em] text-bone-100 min-h-[1.9em]"
               aria-label="Search the future. Fork the world. Tree-search reality."
             >
-              <span aria-hidden="true">{headline}</span>
-              <span
-                aria-hidden="true"
-                className="inline-block align-baseline w-[0.5ch] h-[0.78em] -mb-[0.06em] ml-[0.08em] bg-cool blink"
-              />
+              {(() => {
+                const parts = headline.split("\n");
+                const first = parts[0] ?? "";
+                const second = parts.length > 1 ? parts[1] : "";
+                const cursorOnSecond = parts.length > 1;
+                const Cursor = () => (
+                  <span
+                    aria-hidden="true"
+                    className="inline-block align-baseline w-[0.5ch] h-[0.78em] -mb-[0.06em] ml-[0.08em] bg-cool blink"
+                  />
+                );
+                return (
+                  <>
+                    <span aria-hidden="true" className="block whitespace-nowrap">
+                      {first || "​"}
+                      {!cursorOnSecond && <Cursor />}
+                    </span>
+                    <span aria-hidden="true" className="block whitespace-nowrap">
+                      {second || "​"}
+                      {cursorOnSecond && <Cursor />}
+                    </span>
+                  </>
+                );
+              })()}
             </h1>
             <p className="mt-5 text-[18px] md:text-[20px] leading-snug text-bone-100 max-w-md font-medium tracking-[-0.015em] text-balance">
               MCTS for reality. One scenario, a searched tree of timelines, audited.
