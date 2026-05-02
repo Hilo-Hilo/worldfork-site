@@ -834,12 +834,12 @@ function HeroTree() {
 /* ─────────── 3. HERO BLOCK ─────────── */
 
 const HERO_PHRASES = [
-  "Fork the world.",
-  "Search the future.",
-  "Tree-search reality.",
-  "Sample the possible.",
-  "Replay tomorrow.",
-  "Simulate everything.",
+  "Search the\nfuture.",
+  "Tree-search\nreality.",
+  "Sample the\npossible.",
+  "Replay\ntomorrow.",
+  "Simulate\neverything.",
+  "Fork the\nworld.",
 ];
 
 function useTypewriter(phrases: string[]) {
@@ -854,21 +854,21 @@ function useTypewriter(phrases: string[]) {
     }
     let t: ReturnType<typeof setTimeout>;
     if (phase === "hold") {
-      t = setTimeout(() => setPhase("deleting"), 1800);
+      t = setTimeout(() => setPhase("deleting"), 4200);
     } else if (phase === "deleting") {
       if (text.length === 0) {
         const next = (i + 1) % phrases.length;
         setI(next);
-        setPhase("typing");
+        t = setTimeout(() => setPhase("typing"), 600);
       } else {
-        t = setTimeout(() => setText(text.slice(0, -1)), 32);
+        t = setTimeout(() => setText(text.slice(0, -1)), 45);
       }
     } else {
       const target = phrases[i];
       if (text === target) {
         setPhase("hold");
       } else {
-        t = setTimeout(() => setText(target.slice(0, text.length + 1)), 65);
+        t = setTimeout(() => setText(target.slice(0, text.length + 1)), 85);
       }
     }
     return () => clearTimeout(t);
@@ -901,8 +901,8 @@ function Hero() {
           <div className="md:col-span-5 lg:col-span-5">
             <Mono>§01 — Monte Carlo tree search for reality</Mono>
             <h1
-              className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 text-balance min-h-[1.84em]"
-              aria-label="Fork the world. Search the future. Tree-search reality."
+              className="mt-6 text-[56px] md:text-[80px] lg:text-[96px] leading-[0.92] font-medium tracking-[-0.035em] text-bone-100 whitespace-pre-line min-h-[1.84em]"
+              aria-label="Search the future. Fork the world. Tree-search reality."
             >
               <span aria-hidden="true">{headline}</span>
               <span
