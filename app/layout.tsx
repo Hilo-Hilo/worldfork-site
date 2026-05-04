@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import CoolFx from "./_components/cool-fx";
 import "./globals.css";
 
 const geist = Geist({
@@ -273,6 +274,7 @@ export default function RootLayout({
         <a href="#main" className="skip-link">
           Skip to content
         </a>
+        <CoolFx />
         {children}
         <Analytics />
         <SpeedInsights />
