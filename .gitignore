@@ -49,3 +49,4 @@ hero.png
 
 # local agent state
 .claude/
+.env*.local
