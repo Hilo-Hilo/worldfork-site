@@ -1197,7 +1197,7 @@ function Hero({ trafficStats }: { trafficStats?: ReactNode }) {
             </div>
 
             {/* stat boxes — moved here to balance hero weight */}
-            <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-5">
+            <div className="mt-5 grid grid-cols-3 gap-x-4 gap-y-5">
               {[
                 ["1st", "HackTech '26"],
                 ["audited", "every tick · every rollout"],
