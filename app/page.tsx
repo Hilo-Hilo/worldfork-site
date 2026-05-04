@@ -1,6 +1,6 @@
 import Landing from "./_components/landing";
-import TrafficStrip from "./_components/traffic-strip";
+import TrafficStats from "./_components/traffic-stats";
 
 export default function Page() {
-  return <Landing trafficStrip={<TrafficStrip />} />;
+  return <Landing trafficStats={<TrafficStats />} />;
 }

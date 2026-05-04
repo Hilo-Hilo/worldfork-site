@@ -1041,7 +1041,7 @@ function useTypewriter(phrases: string[]) {
   return text;
 }
 
-function Hero() {
+function Hero({ trafficStats }: { trafficStats?: ReactNode }) {
   const headline = useTypewriter(HERO_PHRASES);
   return (
     <section id="top" className="relative">
@@ -1197,7 +1197,7 @@ function Hero() {
             </div>
 
             {/* stat boxes — moved here to balance hero weight */}
-            <div className="mt-5 grid grid-cols-3 gap-4">
+            <div className="mt-5 grid grid-cols-3 sm:grid-cols-5 gap-4">
               {[
                 ["1st", "HackTech '26"],
                 ["audited", "every tick · every rollout"],
@@ -1212,6 +1212,7 @@ function Hero() {
                   </div>
                 </div>
               ))}
+              {trafficStats}
             </div>
           </div>
         </div>
@@ -2459,9 +2460,9 @@ function MobileStickyCTA() {
 /* ─────────── ROOT ─────────── */
 
 export default function Landing({
-  trafficStrip,
+  trafficStats,
 }: {
-  trafficStrip?: ReactNode;
+  trafficStats?: ReactNode;
 }) {
   return (
     <main
@@ -2471,23 +2472,7 @@ export default function Landing({
       <span className="grain" aria-hidden="true" />
       <span className="scroll-progress" aria-hidden="true" />
       <Nav />
-      <Hero />
-      {trafficStrip ? (
-        <section
-          aria-label="Repository traffic"
-          className="relative border-t hairline"
-        >
-          <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-8 md:py-10">
-            <div className="flex items-baseline justify-between mb-3">
-              <Mono>§01.5 — repo traffic · live</Mono>
-              <span className="hidden sm:inline font-mono text-[10.5px] text-bone-500 tracking-[0.16em] uppercase">
-                synced daily · github traffic api
-              </span>
-            </div>
-            {trafficStrip}
-          </div>
-        </section>
-      ) : null}
+      <Hero trafficStats={trafficStats} />
       <ConceptLineVsTree />
       <HowItWorks />
       <CLISection />
