@@ -6,6 +6,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import MiniSimRibbon from "./mini-sim-ribbon";
+import CounterfactualDiff from "./counterfactual-diff";
 
 const GITHUB_URL = "https://github.com/Hilo-Hilo/WorldFork";
 const DOCS_URL = "https://worldfork.readthedocs.io/en/latest/";
@@ -609,6 +611,7 @@ function buildTree(seed = 7): Tree {
 
 function HeroTree() {
   const { nodes, edges } = useMemo(() => buildTree(11), []);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const auditedIds = useMemo(
     () =>
@@ -631,6 +634,31 @@ function HeroTree() {
     [nodes]
   );
 
+  const focusedSet = useMemo(() => {
+    if (!selectedId) return null;
+    const set = new Set<string>([selectedId]);
+    // descendants
+    const queue = [selectedId];
+    while (queue.length) {
+      const id = queue.shift()!;
+      for (const e of edges) {
+        if (e.from.id === id && !set.has(e.to.id)) {
+          set.add(e.to.id);
+          queue.push(e.to.id);
+        }
+      }
+    }
+    // ancestors
+    let cursor: TreeNode | null = nodes.find((n) => n.id === selectedId) || null;
+    while (cursor?.parent) {
+      set.add(cursor.parent.id);
+      cursor = cursor.parent;
+    }
+    return set;
+  }, [selectedId, nodes, edges]);
+
+  const selectedNode = selectedId ? nodes.find((n) => n.id === selectedId) || null : null;
+
   const pathFor = (e: TreeEdge) => {
     const dx = e.to.x - e.from.x;
     const c1x = e.from.x + dx * 0.5;
@@ -640,6 +668,21 @@ function HeroTree() {
 
   const tickColumns = [60, 200, 360, 520, 660, 790];
   const tickLabels = ["t=0", "t=1", "t=2", "t=3", "t=4", "t=5"];
+
+  const nodeStatus = (n: TreeNode) => {
+    if (auditedIds.has(n.id)) return "audited";
+    if (prunedIds.has(n.id)) return "pruned";
+    if (n.depth === 0) return "big bang";
+    return "active";
+  };
+
+  // pseudo-deterministic per-node "score" for the inspector readout
+  const scoreFor = (n: TreeNode) => {
+    let s = 0;
+    for (let i = 0; i < n.id.length; i++) s = (s * 31 + n.id.charCodeAt(i)) & 0xffff;
+    const base = ((s % 73) + 27) / 100;
+    return prunedIds.has(n.id) ? Math.max(0.08, base - 0.5) : auditedIds.has(n.id) ? Math.min(0.97, base + 0.25) : base;
+  };
 
   return (
     <div className="relative w-full h-full">
@@ -664,13 +707,16 @@ function HeroTree() {
         className="w-full h-full overflow-visible"
         role="img"
         aria-labelledby="hero-tree-title hero-tree-desc"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) setSelectedId(null);
+        }}
       >
         <title id="hero-tree-title">WorldFork multiverse tree</title>
         <desc id="hero-tree-desc">
           Diagram of a Big Bang scenario branching into multiple timelines
           across six ticks. Active timelines are blue, audited timelines are
           marked with a square outline, and pruned timelines are dashed and
-          muted.
+          muted. Tap a node to inspect its lineage.
         </desc>
         <defs>
           <pattern
@@ -710,6 +756,8 @@ function HeroTree() {
           const isPruned = prunedIds.has(e.to.id);
           const len = 600;
           const delay = e.from.depth * 0.18 + (i % 6) * 0.04;
+          const inFocus =
+            !focusedSet || (focusedSet.has(e.from.id) && focusedSet.has(e.to.id));
           return (
             <path
               key={i}
@@ -730,6 +778,8 @@ function HeroTree() {
                 {
                   "--len": len,
                   animationDelay: `${delay}s`,
+                  opacity: inFocus ? 1 : 0.18,
+                  transition: "opacity 0.3s ease",
                 } as React.CSSProperties
               }
             />
@@ -743,6 +793,8 @@ function HeroTree() {
           const isLeaf = !edges.some((e) => e.from === n);
           const isAudited = auditedIds.has(n.id);
           const isPruned = prunedIds.has(n.id);
+          const isSelected = n.id === selectedId;
+          const inFocus = !focusedSet || focusedSet.has(n.id);
           const r = isRoot ? 6 : isLeaf ? 3 : 2.4;
           const fill = isRoot
             ? "#4A9EFF"
@@ -757,7 +809,28 @@ function HeroTree() {
             <g
               key={n.id}
               className="node-pop"
-              style={{ animationDelay: `${0.2 + n.depth * 0.18}s` }}
+              style={{
+                animationDelay: `${0.2 + n.depth * 0.18}s`,
+                opacity: inFocus ? 1 : 0.22,
+                transition: "opacity 0.3s ease",
+                cursor: "pointer",
+              }}
+              onClick={(ev) => {
+                ev.stopPropagation();
+                setSelectedId(isSelected ? null : n.id);
+              }}
+              onKeyDown={(ev) => {
+                if (ev.key === "Enter" || ev.key === " ") {
+                  ev.preventDefault();
+                  setSelectedId(isSelected ? null : n.id);
+                } else if (ev.key === "Escape") {
+                  setSelectedId(null);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Timeline node ${n.id}, depth ${n.depth}, ${nodeStatus(n)}`}
+              aria-pressed={isSelected}
             >
               {isRoot && (
                 <circle
@@ -781,6 +854,17 @@ function HeroTree() {
                   strokeWidth="0.6"
                 />
               )}
+              {isSelected && (
+                <circle
+                  cx={n.x}
+                  cy={n.y}
+                  r="11"
+                  fill="none"
+                  stroke="#4A9EFF"
+                  strokeWidth="1"
+                  strokeDasharray="2 3"
+                />
+              )}
               <circle
                 cx={n.x}
                 cy={n.y}
@@ -788,6 +872,16 @@ function HeroTree() {
                 fill={fill}
                 stroke={isRoot ? "#0A0B0D" : "none"}
                 strokeWidth="1"
+              />
+              {/* expanded touch target — invisible, ≥28px on phone */}
+              <circle
+                cx={n.x}
+                cy={n.y}
+                r="14"
+                fill="transparent"
+                stroke="transparent"
+                pointerEvents="all"
+                style={{ outline: "none" }}
               />
             </g>
           );
@@ -824,9 +918,78 @@ function HeroTree() {
           <text x="14" y="510">
             nodes {nodes.length} · branches {edges.length} · audited{" "}
             {auditedIds.size} · pruned {prunedIds.size}
+            {selectedId ? `  ·  selected ${selectedId}` : "  ·  tap a node"}
           </text>
         </g>
       </svg>
+
+      {selectedNode && (
+        <div
+          className="absolute z-10 bottom-2 right-2 md:bottom-4 md:right-4 w-[260px] max-w-[calc(100%-1rem)] border hairline-strong bg-ink-900/95 backdrop-blur p-3.5 text-[11px] font-mono pointer-events-auto"
+          role="dialog"
+          aria-label={`Inspector for node ${selectedNode.id}`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-bone-400 tracking-[0.14em] uppercase text-[10px]">
+              node {selectedNode.id}
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedId(null)}
+              className="text-bone-400 hover:text-bone-100 -mr-1 -mt-1 px-1.5"
+              aria-label="Close inspector"
+            >
+              ×
+            </button>
+          </div>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11.5px]">
+            <dt className="text-bone-500">depth</dt>
+            <dd className="text-bone-100">t={selectedNode.depth}</dd>
+            <dt className="text-bone-500">status</dt>
+            <dd
+              className={
+                auditedIds.has(selectedNode.id)
+                  ? "text-bone-100"
+                  : prunedIds.has(selectedNode.id)
+                  ? "text-[#d97757]"
+                  : "text-cool"
+              }
+            >
+              {nodeStatus(selectedNode)}
+            </dd>
+            <dt className="text-bone-500">score</dt>
+            <dd className="text-bone-200">
+              {scoreFor(selectedNode).toFixed(2)}
+            </dd>
+            <dt className="text-bone-500">p(branch)</dt>
+            <dd className="text-bone-200">
+              {(selectedNode.branchProb || 0).toFixed(2)}
+            </dd>
+            <dt className="text-bone-500">lineage</dt>
+            <dd className="text-bone-200 break-all">
+              {(() => {
+                const chain: string[] = [];
+                let c: TreeNode | null = selectedNode;
+                while (c) {
+                  chain.unshift(c.id === "r" ? "root" : `t${c.depth}`);
+                  c = c.parent;
+                }
+                return chain.join(" → ");
+              })()}
+            </dd>
+          </dl>
+          <div className="mt-2 pt-2 border-t hairline text-bone-400 leading-snug">
+            <span className="text-bone-500">// </span>
+            {prunedIds.has(selectedNode.id)
+              ? "back-up returned a low value · subtree dropped"
+              : auditedIds.has(selectedNode.id)
+              ? "god-agent verified this leaf · marked surviving"
+              : selectedNode.depth === 0
+              ? "root scenario · seeds every multiverse"
+              : "active branch · not yet evaluated"}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1948,11 +2111,41 @@ function Showcase() {
           </div>
         </div>
       </div>
+
+      <div className="mt-12 md:mt-16">
+        <div className="mb-3 flex items-center justify-between">
+          <Mono>live · runtime preview</Mono>
+          <span className="font-mono text-[10.5px] text-bone-500 tracking-[0.14em] uppercase hidden sm:inline">
+            loop · expand → score → prune
+          </span>
+        </div>
+        <MiniSimRibbon />
+        <p className="mt-3 text-bone-400 text-[12.5px] leading-relaxed font-mono max-w-2xl">
+          <span className="text-bone-500">// </span>
+          a stripped-down MCTS loop, on the page. expansion grows a tree, the
+          god-agent backs scores up the tree, low-value branches drop. then it
+          starts over.
+        </p>
+      </div>
     </Section>
   );
 }
 
-/* ─────────── 9. FAQ — common questions, side-by-side definitions ─────────── */
+/* ─────────── 9. COUNTERFACTUAL — pick two endings, diff the world ─────────── */
+
+function CounterfactualSection() {
+  return (
+    <Section
+      id="counterfactual"
+      label="§06 — counterfactual"
+      title="Two endings, one root. Diff them line-by-line."
+    >
+      <CounterfactualDiff />
+    </Section>
+  );
+}
+
+/* ─────────── 10. FAQ — common questions, side-by-side definitions ─────────── */
 
 const FAQ_ITEMS: Array<[string, ReactNode]> = [
   [
@@ -2279,6 +2472,7 @@ export default function Landing() {
       <HowItWorks />
       <CLISection />
       <Showcase />
+      <CounterfactualSection />
       <Quickstart />
       <FAQ />
       <Footer />

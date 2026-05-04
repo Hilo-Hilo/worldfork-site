@@ -346,6 +346,16 @@ body {
     opacity: 0;
   }
 }
+@keyframes pulse-fade {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
 .pulse-ring {
   animation: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
