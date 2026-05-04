@@ -131,7 +131,7 @@ const STRUCTURED_DATA = {
       "@id": `${SITE_URL}/#install`,
       name: "Install WorldFork using a coding agent",
       description:
-        "Install WorldFork with a single agent prompt that runs the official setup skill, configures the environment, and runs the onboarding demo.",
+        "Install WorldFork with a single agent prompt that runs the official skill, configures the environment, and runs the onboarding demo.",
       totalTime: "PT15M",
       tool: [
         { "@type": "HowToTool", name: "A coding agent (Claude Code, Cursor, etc.)" },
@@ -141,13 +141,13 @@ const STRUCTURED_DATA = {
           "@type": "HowToStep",
           position: 1,
           name: "Paste the install prompt",
-          text: 'Drop this prompt into your coding agent: "Run this command to install the WorldFork setup skill, then use it to set up WorldFork: npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all".',
+          text: 'Drop this prompt into your coding agent: "Run this command to install the WorldFork skill, then use its setup module to set up WorldFork: npx skills add Hilo-Hilo/WorldFork/skills/worldfork --all".',
         },
         {
           "@type": "HowToStep",
           position: 2,
           name: "Agent installs the skill",
-          text: "The agent runs npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all to install the official setup skill.",
+          text: "The agent runs npx skills add Hilo-Hilo/WorldFork/skills/worldfork --all to install the official skill.",
         },
         {
           "@type": "HowToStep",
@@ -213,7 +213,7 @@ const STRUCTURED_DATA = {
           name: "How do I install WorldFork using a coding agent?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Paste this prompt into your agent: \"Run this command to install the WorldFork setup skill, then use it to set up WorldFork: npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all\". The skill handles clone, environment bring-up, and first-run validation.",
+            text: "Paste this prompt into your agent: \"Run this command to install the WorldFork skill, then use its setup module to set up WorldFork: npx skills add Hilo-Hilo/WorldFork/skills/worldfork --all\". The skill handles clone, environment bring-up, and first-run validation.",
           },
         },
       ],

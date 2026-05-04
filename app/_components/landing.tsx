@@ -15,9 +15,9 @@ const SETUP_DOCS_URL =
 const CLI_DOCS_URL = "https://worldfork.readthedocs.io/en/latest/cli.html";
 const ARCH_DOCS_URL =
   "https://worldfork.readthedocs.io/en/latest/architecture.html";
-const AGENT_INSTALL_PROMPT = `Run this command to install the WorldFork setup skill, then use it to set up WorldFork:
+const AGENT_INSTALL_PROMPT = `Run this command to install the WorldFork skill, then use its setup module to set up WorldFork:
 
-npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all`;
+npx skills add Hilo-Hilo/WorldFork/skills/worldfork --all`;
 
 type TreeNode = {
   id: string;
@@ -1781,7 +1781,7 @@ function Quickstart() {
         <div className="md:col-span-7">
           <SetupPromptCard prompt={AGENT_INSTALL_PROMPT} variant="section" />
           <p className="mt-4 font-mono text-[11.5px] text-bone-400 leading-relaxed">
-            the skill walks you through prerequisites, .env config, CLI install,
+            the skill routes your agent through setup, CLI, debug, reporting, and docs modules; setup walks you through prerequisites, .env config, CLI install,
             docker compose, migrations, seeding, readiness checks, and the
             onboarding demo.
           </p>
@@ -2017,7 +2017,7 @@ const FAQ_ITEMS: Array<[string, ReactNode]> = [
     <>
       Paste the prompt at the top of this page into Claude Code, Cursor, or
       any coding agent. The official{" "}
-      <span className="font-mono text-bone-200">worldfork-setup</span> skill
+      <span className="font-mono text-bone-200">worldfork</span> skill
       handles repo clone, environment bring-up, and first-run validation.
     </>,
   ],

@@ -24,9 +24,9 @@ This site is the marketing landing page. The actual project lives on GitHub. Wor
 
 Paste this prompt into a coding agent (Claude Code, Cursor, etc.) and the agent will install and run WorldFork via the official skill:
 
-    Run this command to install the WorldFork setup skill, then use it to set up WorldFork:
+    Run this command to install the WorldFork skill, then use its setup module to set up WorldFork:
 
-    npx skills add Hilo-Hilo/WorldFork/skills/worldfork-setup --all
+    npx skills add Hilo-Hilo/WorldFork/skills/worldfork --all
 
 The skill handles repo clone, environment bring-up, scenario authoring, and first-run validation.
 
