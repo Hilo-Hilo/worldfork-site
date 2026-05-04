@@ -2481,7 +2481,7 @@ export default function Landing({
             <div className="flex items-baseline justify-between mb-3">
               <Mono>§01.5 — repo traffic · live</Mono>
               <span className="hidden sm:inline font-mono text-[10.5px] text-bone-500 tracking-[0.16em] uppercase">
-                synced hourly · github traffic api
+                synced daily · github traffic api
               </span>
             </div>
             {trafficStrip}
